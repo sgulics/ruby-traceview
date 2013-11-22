@@ -1,7 +1,7 @@
 require 'minitest_helper'
 require 'net/http'
 
-describe Oboe::Inst do
+describe Net::HTTP do
   before do
     clear_all_traces 
     @collect_backtraces = Oboe::Config[:nethttp][:collect_backtraces]
