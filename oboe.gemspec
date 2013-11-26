@@ -13,6 +13,8 @@ Gem::Specification.new do |s|
   s.description = %q{The oboe gem provides TraceView instrumentation for Ruby and Ruby frameworks.}
 
   s.extra_rdoc_files = ["LICENSE"]
+  s.license = 'AppNeta Open License'
+
   s.files = `git ls-files`.split("\n")
   s.test_files  = Dir.glob("{test}/**/*.rb")
     
