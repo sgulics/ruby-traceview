@@ -1,0 +1,220 @@
+#!/usr/bin/env ruby
+$:.push File.expand_path("../lib", __FILE__)
+
+require 'fileutils'
+require 'rubygems'
+require 'bundler/setup'
+require 'thor'
+
+require 'oboe/version'
+
+#client = Octokit::Client.new :login => 'pglombardo@gmail.com', :password => ''
+#user = client.user
+#user.login
+
+#client.create_release
+#client.upload_asset
+#client.delete_release
+#
+
+class RTB
+
+  def beta
+    # Verify version
+    # Build the gem
+    # Push the gem to GemFury
+  end
+
+  def rc
+    # Verify version
+    # Clip the Changelog
+    # Build the gem
+    # Create the Github release as a prerelease
+    # Push the gem to Rubygems as a prerelease
+  end
+
+  def public
+    # Verify version
+    # Clip the Changelog
+    # Build the gem
+    # Create the Github release as a prerelease
+    # Push the gem to Rubygems as a prerelease
+  end
+
+  private
+end
+
+class RTBClient < Thor
+  class_option :verbose, :type => :boolean
+  class_option :debug, :type => :boolean
+  class_option :'dry-run', :type => :boolean
+  attr_accessor :rtb
+  attr_accessor :gem_filename
+
+  def initialize(*args)
+    self.rtb = RTB.new
+    super(*args)
+  end
+
+  desc "beta", "Releases a new beta gem to the private GemFury gem server.  See 'rtb help beta' for details."
+  long_desc <<-LONGDESC
+    `rtb beta` will build and release a new gem to the private GemFury server.
+
+    No Github release will be created.
+
+    gem build:                yes
+    git tag:                  no
+    gem server:               GemFury
+    Create Github Release?:   no
+LONGDESC
+  def beta
+    begin
+      say "This will release a new #{shell.set_color "beta", :magenta} gem to the private GemFury gem server."
+      say ""
+      say "Release process summary:"
+      say ""
+      say "gem build:                yes"
+      say "git tag:                  yes"
+      say "gem server:               GemFury"
+      say "Create Github Release?:   yes/marked 'prerelease'"
+      say ""
+      verify_version
+      build_gem
+      fury_push
+    rescue StandardError => e
+      puts e.inspect
+      puts e.backtrace.join("\n")
+    end
+  end
+  
+  desc "rc", "Releases a new prerelease RC gem to Rubygems.  See 'rtb help rc' for details'"
+  long_desc <<-LONGDESC
+    `rtb rc` will build, tag and release a new gem to Rubygems as a 'prerelease gem'.
+
+    Rubygems 'prerelease' gems are stored on Rubygems but not publicly available unless
+    a 'prerelease' gem is specifically requested on the command line.
+
+    A Github Release that is marked 'prerelease' will be created.
+
+    \tgem build:                yes
+    \tgit tag:                  yes
+    \tgem server:               Rubygems
+    \tCreate Github Release?:   yes/marked 'prerelease'
+  LONGDESC
+  def rc
+    begin
+      say "This will release a new #{shell.set_color "beta", :magenta} gem to the private GemFury gem server."
+      say ""
+      say "Release process summary:"
+      say ""
+      say "gem build:                yes"
+      say "git tag:                  no"
+      say "gem server:               GemFury"
+      say "Create Github Release?:   no"
+      say ""
+      verify_version
+      build_gem
+      fury_push
+    rescue StandardError => e
+      puts e.inspect
+      puts e.backtrace.join("\n")
+    end
+  end
+  
+  desc "public", "Releases a new public gem to Rubygems.  See 'rtb help public' for details'"
+  long_desc <<-LONGDESC
+    `rtb public` will build, tag and release a new gem to Rubygems.
+
+    A Github Release will be created.
+
+    gem build:                yes
+    git tag:                  yes
+    gem server:               Rubygems
+    Create Github Release?:   yes
+
+  LONGDESC
+  def public
+    begin
+      @rtb.public
+    rescue StandardError => e
+      puts e.inspect
+      puts e.backtrace.join("\n")
+    end
+  end
+
+  private
+    def verify_version
+      while true
+        say ""
+        say "The gem will be #{shell.set_color "beta", :magenta} gem: #{shell.set_color Oboe::Version::STRING, :red}."
+        say ""
+        if options[:'dry-run']
+          confirm = ask "Is this correct? #{shell.set_color "(this is a dry-run)", :yellow } [yNeq?]"
+        else
+          confirm = ask "Is this correct? [yNeq?]"
+        end
+
+        case confirm.downcase
+        when '?'
+          say ""
+          say "y == Yes"
+          say "n == No"
+          say "e == Edit lib/oboe/version.rb in an editor."
+          say "     Chosen by shell environment var: $EDITOR."
+          say "     Current value: #{ENV['EDITOR']}"
+          say "q == Quit"
+          say "? == Show this screen"
+          say ""
+        when 'y'
+          break
+        when 'n', 'q'
+          say 'Release cancelled.  Nothing done.'
+          exit 0
+        when 'e'
+          system(ENV['EDITOR'], "#{File.expand_path("..", __FILE__)}/lib/oboe/version.rb")
+          say ""
+          say "Reloading version..."
+          $LOADED_FEATURES.delete("#{File.expand_path("..", __FILE__)}/lib/oboe/version.rb")
+          require 'oboe/version'
+          say ""
+          say "Version updated..."
+        else
+          say "Unrecognized response."
+        end
+      end
+
+      say "Executing a dry-run release (nothing will really be done)" if options['dry-run']
+    end
+
+    def build_gem
+      say shell.set_color "Building the gem...", :red
+
+      if options['dry-run']
+        say shell.set_color "I would normally run a gem build now: gem build oboe.gemspec", :green
+      else
+        say %x(gem build oboe.gemspec)
+        
+        self.gem_filename = File.expand_path("..", __FILE__) + "/oboe-#{Oboe::Version::STRING}.gem"
+        
+        if File.exists?(gem_filename)
+          FileUtils.move(gem_filename, File.expand_path("..", __FILE__) + "/pkg/")
+          self.gem_filename = File.expand_path("..", __FILE__) + "/pkg/oboe-#{Oboe::Version::STRING}.gem"
+        else
+          raise StandardError.new("gem build failed :(")
+        end
+      end
+    end
+
+    def fury_push
+      say "Pushing the gem to GemFury..." if options[:verbose]
+      say %x(fury push #{@gem_filename})
+    end
+
+    def fury_gem_exists?(version)
+      x = `fury versions oboe | grep #{version}`
+      x.length
+    end
+end
+
+RTBClient.start(ARGV)
+
