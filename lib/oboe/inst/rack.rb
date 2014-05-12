@@ -42,6 +42,7 @@ module Oboe
         report_kvs['Forwarded-Proto']   = env['HTTP_X_FORWARDED_PROTO']  if env.has_key?('HTTP_X_FORWARDED_PROTO')
         report_kvs['Forwarded-Port']    = env['HTTP_X_FORWARDED_PORT']   if env.has_key?('HTTP_X_FORWARDED_PORT')
 
+        report_kvs['ProcessID'] = Process.pid
         report_kvs['Ruby.Oboe.Version'] = ::Oboe::Version::STRING
       rescue Exception => e
         # Discard any potential exceptions. Debug log and report whatever we can.
@@ -59,7 +60,6 @@ module Oboe
       xtrace = env.is_a?(Hash) ? env['HTTP_X_TRACE'] : nil
 
       result, xtrace = Oboe::API.start_trace('rack', xtrace, report_kvs) do
-
         status, headers, response = @app.call(env)
 
         if Oboe.tracing?
