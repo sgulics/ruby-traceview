@@ -78,6 +78,10 @@ module Oboe
       end
         
       @@config[:verbose] = false
+
+      # Internal Collectors
+      @@config[:collectors] = {}
+      @@config[:collectors][:gc]     = { :enabled => true, :sleep_interval => 60 }
     end
 
     def self.update!(data)
