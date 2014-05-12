@@ -84,6 +84,15 @@ module Oboe
         Oboe.logger.fatal "[oboe/error] Couldn't load oboe api."
       end
     end
+
+    ##
+    # Start background collectors
+    #
+    def self.start_collectors
+      Thread.new do
+        Oboe::Collectors::GC.new.perform
+      end
+    end
   end
 end
 
