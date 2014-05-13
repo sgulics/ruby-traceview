@@ -84,15 +84,6 @@ module Oboe
         Oboe.logger.fatal "[oboe/error] Couldn't load oboe api."
       end
     end
-
-    ##
-    # Start background collectors
-    #
-    def self.start_collectors
-      Thread.new do
-        Oboe::Collectors::GC.new.perform
-      end
-    end
   end
 end
 
@@ -101,7 +92,7 @@ Oboe::Loading.require_api
 # Auto-start the Reporter unless we running Unicorn on Heroku
 # In that case, we start the reporters after fork
 unless Oboe.heroku? and Oboe.forking_webserver?
-  Oboe.logger.debug "[oboe/debug] starting Reporter from oboe gem"
+  Oboe.logger.debug "[oboe/debug] Starting standard Reporter"
   Oboe::Reporter.start
 end
 

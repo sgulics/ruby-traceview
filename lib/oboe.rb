@@ -31,11 +31,12 @@ begin
   end
  
   require 'oboe/config'
+  require 'oboe/collector_thread'
   require 'oboe/loading'
   require 'method_profiling'
+  require 'oboe/collectors'
   require 'oboe/instrumentation'
   require 'oboe/ruby'
-  require 'oboe/collectors'
 
   # Frameworks
   if Oboe.loaded
