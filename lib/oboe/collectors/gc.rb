@@ -11,16 +11,26 @@ module Oboe
       end
 
       def perform
-        while true do
-          Oboe::API.start_trace('RubyGC', nil, { :ProcessName => Process.pid } ) do
-            Oboe::API.log('RubyGC', 'metrics', ::GC.stat)
-          end
+        begin
+          while true do
+            Oboe::API.start_trace('RubyGC', nil, { :ProcessName => Process.pid } ) do
+              Oboe::API.log('RubyGC', 'metrics', ::GC.stat)
+            end
 
-          Oboe.logger.debug "GC collector run..."
-          
-          sleep @sleep_interval
+            Oboe.logger.debug "[oboe/debug] GC collector run..."
+            
+            sleep @sleep_interval
+          end
+        rescue StandardError => e
+          Oboe.logger.warn "[oboe/warn] GC Collector exiting on exception: #{e.message}"
+          raise
         end
       end
     end
   end
+end
+
+# Launch this collector on load
+Oboe::CollectorThread.new(:gc) do
+  Oboe::Collectors::GC.new.perform
 end
