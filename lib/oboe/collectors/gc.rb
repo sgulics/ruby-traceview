@@ -13,8 +13,11 @@ module Oboe
       def perform
         begin
           while true do
+            report_kvs = ::GC.stat
+            report_kvs[:RubyVersion] = RUBY_VERSION
+
             Oboe::API.start_trace('RubyGC', nil, { :ProcessName => Process.pid } ) do
-              Oboe::API.log('RubyGC', 'metrics', ::GC.stat)
+              Oboe::API.log('RubyGC', 'metrics', report_kvs)
             end
 
             Oboe.logger.debug "[oboe/debug] GC collector run..."
@@ -30,7 +33,9 @@ module Oboe
   end
 end
 
-# Launch this collector on load
-Oboe::CollectorThread.new(:gc) do
-  Oboe::Collectors::GC.new.perform
+if defined?(::GC::Profiler) and ::GC::Profiler.enabled?
+  # Launch this collector on load
+  Oboe::CollectorThread.new(:gc) do
+    Oboe::Collectors::GC.new.perform
+  end
 end
