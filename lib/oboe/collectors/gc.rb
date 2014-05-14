@@ -5,8 +5,10 @@ module Oboe
   module Collectors
     class GC
       attr_accessor :sleep_interval
+      attr_accessor :time_to_exit
 
       def initialize
+        @time_to_exit = false
         @sleep_interval = Oboe::Config[:collectors][:gc][:sleep_interval]
       end
 
@@ -22,7 +24,11 @@ module Oboe
 
             Oboe.logger.debug "[oboe/debug] GC collector run..."
             
-            sleep @sleep_interval
+            if @time_to_exit
+              break
+            else
+              sleep @sleep_interval
+            end
           end
         rescue StandardError => e
           Oboe.logger.warn "[oboe/warn] GC Collector exiting on exception: #{e.message}"
