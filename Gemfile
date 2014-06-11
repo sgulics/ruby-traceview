@@ -9,17 +9,17 @@ group :development, :test do
 end
 
 group :development do
-  gem 'ruby-debug',   :platform => :mri_18
-  gem 'ruby-debug19', :platform => :mri_19, :require => 'ruby-debug'
-  gem 'byebug',       :platform => :mri_20 
-  gem 'perftools.rb', :platform => :mri,    :require => 'perftools'
+  gem 'ruby-debug',   :platform  => :mri_18
+  gem 'debugger',     :platform  => :mri_19
+  gem 'byebug',       :platforms => [ :mri_20, :mri_21 ]
+  gem 'perftools.rb', :platforms => [ :mri_20, :mri_21 ], :require => 'perftools'
   gem 'pry'
 end
 
 # Instrumented gems
 gem 'dalli'
 gem 'memcache-client'
-gem 'memcached' if RUBY_VERSION < '2.0.0'
+gem 'memcached', '1.7.2' if RUBY_VERSION < '2.0.0'
 gem 'cassandra'
 gem 'mongo'
 gem 'bson_ext' # For Mongo, Yours Truly
@@ -31,7 +31,8 @@ gem 'redis'
 gem 'sinatra'
 
 if RUBY_VERSION >= '1.9.3'
-  gem 'padrino', '0.12.0' 
+  gem 'padrino', '0.12.0'
+  gem 'grape'
 end
 
 # Import dependencies from oboe.gemspec
