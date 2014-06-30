@@ -15,12 +15,6 @@ module Oboe
       report_kvs = {}
 
       begin
-        if Oboe.always?
-          # Only report these KVs under tracing_mode 'always' (never for 'through')
-          report_kvs[:SampleRate]        = Oboe.sample_rate
-          report_kvs[:SampleSource]      = Oboe.sample_source
-        end
-
         report_kvs['HTTP-Host']        = req.host
         report_kvs['Port']             = req.port
         report_kvs['Proto']            = req.scheme
@@ -57,13 +51,19 @@ module Oboe
       report_kvs = {}
       report_kvs[:URL] = URI.unescape(req.path)
 
+      if Oboe.always?
+        # Only report these KVs under tracing_mode 'always' (never for 'through')
+        report_kvs[:SampleRate]        = Oboe.sample_rate
+        report_kvs[:SampleSource]      = Oboe.sample_source
+      end
+
       xtrace = env.is_a?(Hash) ? env['HTTP_X_TRACE'] : nil
 
       result, xtrace = Oboe::API.start_trace('rack', xtrace, report_kvs) do
         status, headers, response = @app.call(env)
 
         if Oboe.tracing?
-          report_kvs = collect(req, env) 
+          report_kvs = collect(req, env)
           Oboe::API.log(nil, 'info', report_kvs.merge!({ :Status => status }))
         end
 
