@@ -31,6 +31,7 @@ Oboe::Config[:sample_rate] = 1000000
 Oboe::Ruby.initialize
 Oboe.logger.level = Logger::DEBUG
 
+
 ##
 # clear_all_traces
 #
@@ -46,11 +47,16 @@ end
 # Retrieves all traces written to the trace file
 #
 def get_all_traces
+  io = File.open($trace_file, "r")
+  contents = io.readlines(nil)
+  s = StringIO.new(contents[0])
+
   traces = []
-  f = File.open($trace_file)
-  until f.eof?
-    traces << BSON.read_bson_document(f)
+
+  until s.eof?
+    traces << BSON::Document.from_bson(s)
   end
+
   traces
 end
 
