@@ -38,7 +38,7 @@ module Oboe
 
         report_kvs['ProcessID'] = Process.pid
         report_kvs['Ruby.Oboe.Version'] = ::Oboe::Version::STRING
-      rescue Exception => e
+      rescue StandardError => e
         # Discard any potential exceptions. Debug log and report whatever we can.
         Oboe.logger.debug "[oboe/debug] Rack KV collection error: #{e.inspect}"
       end
