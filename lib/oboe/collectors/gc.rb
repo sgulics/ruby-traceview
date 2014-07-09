@@ -22,8 +22,6 @@ module Oboe
               Oboe::API.log('RubyGC', 'metrics', report_kvs)
             end
 
-            Oboe.logger.debug "[oboe/debug] GC collector run..."
-            
             if @time_to_exit
               break
             else
@@ -31,7 +29,7 @@ module Oboe
             end
           end
         rescue StandardError => e
-          Oboe.logger.warn "[oboe/warn] GC Collector exiting on exception: #{e.message}"
+          Oboe.logger.warn "[oboe/warn] GC collector exiting on exception: #{e.message}"
           raise
         end
       end
