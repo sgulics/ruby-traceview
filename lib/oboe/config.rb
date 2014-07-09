@@ -81,7 +81,8 @@ module Oboe
 
       # Internal Collectors
       @@config[:collectors] = {}
-      @@config[:collectors][:gc]     = { :enabled => true, :sleep_interval => 60 }
+      @@config[:collectors][:gc]       = { :enabled => true, :sleep_interval => 60 }
+      @@config[:collectors][:memory]   = { :enabled => true, :sleep_interval => 120 }
     end
 
     def self.update!(data)

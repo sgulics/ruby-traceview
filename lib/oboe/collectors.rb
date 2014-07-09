@@ -2,3 +2,5 @@
 # All rights reserved.
 
 require 'oboe/collectors/gc'
+require 'oboe/collectors/memory'
+
