@@ -1,4 +1,5 @@
 require 'minitest_helper'
+require 'oboe/collectors/memory'
 
 describe Oboe::Collectors::Memory do
   before do
