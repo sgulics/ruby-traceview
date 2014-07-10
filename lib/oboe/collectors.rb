@@ -1,6 +1,8 @@
 # Copyright (c) 2014 AppNeta, Inc.
 # All rights reserved.
 
-require 'oboe/collectors/gc'
-require 'oboe/collectors/memory'
+if Oboe.loaded
+  require 'oboe/collectors/gc'
+  require 'oboe/collectors/memory'
+end
 
