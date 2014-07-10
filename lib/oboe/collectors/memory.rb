@@ -21,7 +21,7 @@ module Oboe
             File.open("/proc/#{Process.pid}/status", "r").read_nonblock(4096) =~ /RSS:\s*(\d+) kB/i
             report_kvs[:VmRSS] = $1
 
-            Oboe::API.start_trace('RubyMemory', nil, { :ProcessName => Process.pid } ) do
+            Oboe::API.start_trace('RubyMemory', nil, { 'Force' => true, :ProcessName => Process.pid } ) do
               Oboe::API.log('RubyMemory', 'metrics', report_kvs)
             end
 

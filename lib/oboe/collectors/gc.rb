@@ -18,7 +18,7 @@ module Oboe
             report_kvs = ::GC.stat
             report_kvs[:RubyVersion] = RUBY_VERSION
 
-            Oboe::API.start_trace('RubyGC', nil, { :ProcessName => Process.pid } ) do
+            Oboe::API.start_trace('RubyGC', nil, { 'Force' => true, :ProcessName => Process.pid } ) do
               Oboe::API.log('RubyGC', 'metrics', report_kvs)
             end
 
