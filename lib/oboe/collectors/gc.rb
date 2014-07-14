@@ -17,6 +17,7 @@ module Oboe
           while true do
             report_kvs = ::GC.stat
             report_kvs[:RubyVersion] = RUBY_VERSION
+            report_kvs[:total_time] = GC::Profiler.total_time
 
             Oboe::API.start_trace('RubyGC', nil, { 'Force' => true, :ProcessName => Process.pid } ) do
               Oboe::API.log('RubyGC', 'metrics', report_kvs)
