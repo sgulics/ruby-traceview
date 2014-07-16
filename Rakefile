@@ -79,6 +79,7 @@ task :recompile => [ :distclean, :compile ]
 
 task :console do
   require 'pry'
+  GC::Profiler.enable
   require 'oboe'
   ARGV.clear
   Pry.start
