@@ -20,7 +20,7 @@ module Oboe
           while true do
             report_kvs = {}
             report_kvs[:RubyVersion] = RUBY_VERSION
-            report_kvs[:total_time] = GC::Profiler.total_time
+            report_kvs[:total_time] = ::GC::Profiler.total_time
 
             report_kvs = ::GC.stat.select{ |k, v| kvs.include?(k) }
 
