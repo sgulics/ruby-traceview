@@ -14,9 +14,14 @@ module Oboe
 
       def perform
         begin
+          kvs = [ :count, :minor_gc_count, :major_gc_count, :total_time, :total_allocated_object,
+                  :total_freed_object, :heap_live_slot, :heap_live_num, :heap_free_slot, :head_free_num ]
+
           while true do
-            report_kvs = ::GC.stat
+            report_kvs = {}
             report_kvs[:RubyVersion] = RUBY_VERSION
+
+            report_kvs = ::GC.stat.select{ |k, v| kvs.include?(k) }
 
             Oboe::API.start_trace('RubyGC', nil, { 'Force' => true, :ProcessName => Process.pid } ) do
               Oboe::API.log('RubyGC', 'metrics', report_kvs)
