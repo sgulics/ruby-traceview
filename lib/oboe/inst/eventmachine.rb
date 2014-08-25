@@ -77,4 +77,3 @@ if Oboe::Config[:eventmachine][:enabled]
   ::Oboe::Util.send_include(::EventMachine, ::Oboe::Inst::EventMachine)
   ::Oboe::Util.send_include(::EventMachine::Deferrable, ::Oboe::Inst::EventMachine::Deferrable)
 end
-
