@@ -10,7 +10,7 @@ module Oboe
         ::Oboe::Util.method_alias(klass, :defer, ::EventMachine)
       end
 
-      def defer_with_oboe op = nil, callback = nil, &blk
+      def defer_with_oboe(op = nil, callback = nil, &blk)
         if Oboe.tracing?
           context = Oboe::Context.toString
 
@@ -18,7 +18,7 @@ module Oboe
           wrapped_blk = blk
 
           if op
-            wrapped_op = Proc.new {
+            wrapped_op = Proc.new do
               Oboe::Context.fromString(context)
               # Oboe.flags[:deferred] = true or check reactor_thread?
               # Async flag?
@@ -27,9 +27,9 @@ module Oboe
               Oboe::Context.clear
 
               result
-            }
+            end
           elsif blk
-            wrapped_blk = Proc.new {
+            wrapped_blk = Proc.new do
               Oboe::Context.fromString(context)
               # Oboe.flags[:deferred] = true or check reactor_thread?
               # Async flag?
@@ -38,7 +38,7 @@ module Oboe
               Oboe::Context.clear
 
               result
-            }
+            end
           end
           defer_without_oboe(wrapped_op, callback, &wrapped_blk)
         else
@@ -53,14 +53,14 @@ module Oboe
           ::Oboe::Util.method_alias(klass, :callback, ::EventMachine::Deferrable)
         end
 
-        def callback_with_oboe &block
+        def callback_with_oboe(&block)
           if Oboe.tracing?
             context = Oboe::Context.toString
 
-            wrapped_block = Proc.new {
+            wrapped_block = Proc.new do
               Oboe::Context.fromString(context)
               block.call
-            }
+            end
 
             callback_without_oboe &wrapped_block
           else
@@ -77,3 +77,4 @@ if Oboe::Config[:eventmachine][:enabled]
   ::Oboe::Util.send_include(::EventMachine, ::Oboe::Inst::EventMachine)
   ::Oboe::Util.send_include(::EventMachine::Deferrable, ::Oboe::Inst::EventMachine::Deferrable)
 end
+
