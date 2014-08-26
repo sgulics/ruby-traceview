@@ -73,7 +73,7 @@ module Oboe
 end
 
 if Oboe::Config[:eventmachine][:enabled]
-  Oboe.logger.info "[oboe/loading] Instrumenting eventmachine" if Oboe::Config[:verbose]
+  Oboe.logger.info "[oboe/loading] Instrumenting eventmachine"
   ::Oboe::Util.send_include(::EventMachine, ::Oboe::Inst::EventMachine)
   ::Oboe::Util.send_include(::EventMachine::Deferrable, ::Oboe::Inst::EventMachine::Deferrable)
 end

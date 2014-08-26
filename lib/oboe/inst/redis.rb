@@ -266,7 +266,7 @@ end
 
 if Oboe::Config[:redis][:enabled]
   if defined?(::Redis) and Gem::Version.new(::Redis::VERSION) >= Gem::Version.new('3.0.0')
-    Oboe.logger.info "[oboe/loading] Instrumenting redis" if Oboe::Config[:verbose]
+    Oboe.logger.info "[oboe/loading] Instrumenting redis"
     ::Oboe::Util.send_include(::Redis::Client, ::Oboe::Inst::Redis::Client)
   end
 end

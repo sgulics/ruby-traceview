@@ -25,7 +25,7 @@ module Oboe
 end
 
 if defined?(::EventMachine::HttpConnection) and defined?(::EventMachine::HttpClient) and Oboe::Config[:em_http_request][:enabled]
-  Oboe.logger.info "[oboe/loading] Instrumenting em-http-request" if Oboe::Config[:verbose]
+  Oboe.logger.info "[oboe/loading] Instrumenting em-http-request"
 
   class ::EventMachine::HttpConnection
     include Oboe::Inst::EventMachine::HttpConnection
