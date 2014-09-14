@@ -1,7 +1,9 @@
+require "minitest/spec"
 require "minitest/autorun"
 require "minitest/reporters"
 
 ENV["RACK_ENV"] = "test"
+ENV["OBOE_GEM_TEST"] = "true"
 
 # FIXME: Temp hack to fix padrino-core calling RUBY_ENGINE when it's
 # not defined under Ruby 1.8.7 and 1.9.3
@@ -11,6 +13,10 @@ Minitest::Spec.new 'pry'
 
 unless RUBY_VERSION =~ /^1.8/
   MiniTest::Reporters.use! MiniTest::Reporters::SpecReporter.new
+end
+
+if defined?(JRUBY_VERSION)
+  ENV['JAVA_OPTS'] = "-J-javaagent:/usr/local/tracelytics/tracelyticsagent.jar"
 end
 
 require 'rubygems'
@@ -28,7 +34,7 @@ $trace_file = @trace_dir + "trace_output.bson"
 Oboe::Config[:verbose] = true
 Oboe::Config[:tracing_mode] = "always"
 Oboe::Config[:sample_rate] = 1000000
-Oboe::Ruby.initialize
+Oboe::Ruby.load
 Oboe.logger.level = Logger::DEBUG
 
 
@@ -38,7 +44,7 @@ Oboe.logger.level = Logger::DEBUG
 # Truncates the trace output file to zero
 #
 def clear_all_traces
-  File.truncate($trace_file, 0)
+  Oboe::Reporter.clear_all_traces
 end
 
 ##
@@ -47,17 +53,7 @@ end
 # Retrieves all traces written to the trace file
 #
 def get_all_traces
-  io = File.open($trace_file, "r")
-  contents = io.readlines(nil)
-  s = StringIO.new(contents[0])
-
-  traces = []
-
-  until s.eof?
-    traces << BSON::Document.from_bson(s)
-  end
-
-  traces
+  Oboe::Reporter.get_all_traces
 end
 
 ##
@@ -93,6 +89,7 @@ end
 # has he specified key
 #
 def layer_has_key(traces, layer, key)
+  return false if traces.empty?
   has_key = false
 
   traces.each do |t|
@@ -113,6 +110,7 @@ end
 # (regardless of event type) doesn't have the specified key
 #
 def layer_doesnt_have_key(traces, layer, key)
+  return false if traces.empty?
   has_key = false
 
   traces.each do |t|
