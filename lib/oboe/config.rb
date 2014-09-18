@@ -11,9 +11,10 @@ module Oboe
   module Config
     @@config = {}
 
-    @@instrumentation = [:action_controller, :action_view, :active_record,
-                         :cassandra, :dalli, :em_http_request, :faraday, :nethttp, :memcached,
-                         :memcache, :mongo, :moped, :rack, :redis, :resque]
+    @@instrumentation = [ :action_controller, :action_view, :active_record,
+                          :cassandra, :dalli, :em_http_request, :eventmachine,
+                          :faraday, :nethttp, :memcached, :memcache, :mongo,
+                          :moped, :rack, :redis, :resque ]
     ##
     # Return the raw nested hash.
     #
@@ -32,6 +33,7 @@ module Oboe
 
       # Beta instrumentation disabled by default
       Oboe::Config[:em_http_request][:enabled] = false
+      Oboe::Config[:eventmachine][:enabled] = false
 
       # Set collect_backtraces defaults
       Oboe::Config[:action_controller][:collect_backtraces] = true
@@ -41,6 +43,7 @@ module Oboe
       Oboe::Config[:dalli][:collect_backtraces] = false
       Oboe::Config[:faraday][:collect_backtraces] = false
       Oboe::Config[:em_http_request][:collect_backtraces] = false
+      Oboe::Config[:eventmachine][:collect_backtraces] = false
       Oboe::Config[:memcache][:collect_backtraces] = false
       Oboe::Config[:memcached][:collect_backtraces] = false
       Oboe::Config[:mongo][:collect_backtraces] = true
