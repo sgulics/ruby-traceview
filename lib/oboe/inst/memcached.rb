@@ -7,14 +7,18 @@ module Oboe
       include Oboe::API::Memcache
 
       def self.included(cls)
+<<<<<<< HEAD
         Oboe.logger.info "[oboe/loading] Instrumenting memcached"
+=======
+        Oboe.logger.info '[oboe/loading] Instrumenting memcached' if Oboe::Config[:verbose]
+>>>>>>> master
 
         cls.class_eval do
-          MEMCACHE_OPS.reject { |m| not method_defined?(m) }.each do |m|
+          MEMCACHE_OPS.reject { |m| !method_defined?(m) }.each do |m|
             define_method("#{m}_with_oboe") do |*args|
               opts = { :KVOp => m }
 
-              if args.length and args[0].class != Array
+              if args.length && !args[0].is_a?(Array)
                 opts[:KVKey] = args[0].to_s
                 rhost = remote_host(args[0].to_s)
                 opts[:RemoteHost] = rhost if rhost
@@ -24,7 +28,7 @@ module Oboe
                 result = send("#{m}_without_oboe", *args)
 
                 info_kvs = {}
-                info_kvs[:KVHit] = memcache_hit?(result) if m == :get and args.length and args[0].class == String
+                info_kvs[:KVHit] = memcache_hit?(result) if m == :get && args.length && args[0].class == String
                 info_kvs[:Backtrace] = Oboe::API.backtrace if Oboe::Config[:memcached][:collect_backtraces]
 
                 Oboe::API.log('memcache', 'info', info_kvs) unless info_kvs.empty?
@@ -46,13 +50,18 @@ module Oboe
           if ::Memcached::Rails.method_defined? :get_multi
             alias get_multi_without_oboe get_multi
             alias get_multi get_multi_with_oboe
+<<<<<<< HEAD
           else
             Oboe.logger.warn "[oboe/loading] Couldn't properly instrument Memcached (:get_multi).  Partial traces may occur."
+=======
+          elsif Oboe::Config[:verbose]
+            Oboe.logger.warn '[oboe/loading] Couldn\'t properly instrument Memcached.  Partial traces may occur.'
+>>>>>>> master
           end
         end
       end
 
-      def get_multi_with_oboe(keys, raw=false)
+      def get_multi_with_oboe(keys, raw = false)
         if Oboe.tracing?
           layer_kvs = {}
           layer_kvs[:KVOp] = :get_multi
@@ -77,12 +86,11 @@ module Oboe
           get_multi_without_oboe(keys, raw)
         end
       end
-
     end # module MemcachedRails
   end # module Inst
 end # module Oboe
 
-if defined?(::Memcached) and Oboe::Config[:memcached][:enabled]
+if defined?(::Memcached) && Oboe::Config[:memcached][:enabled]
   ::Memcached.class_eval do
     include Oboe::Inst::Memcached
   end
@@ -93,4 +101,3 @@ if defined?(::Memcached) and Oboe::Config[:memcached][:enabled]
     end
   end
 end
-
