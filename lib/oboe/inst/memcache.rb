@@ -7,11 +7,7 @@ module Oboe
       include Oboe::API::Memcache
 
       def self.included(cls)
-<<<<<<< HEAD
         Oboe.logger.info "[oboe/loading] Instrumenting memcache"
-=======
-        Oboe.logger.info '[oboe/loading] Instrumenting memcache' if Oboe::Config[:verbose]
->>>>>>> master
 
         cls.class_eval do
           MEMCACHE_OPS.reject { |m| !method_defined?(m) }.each do |m|

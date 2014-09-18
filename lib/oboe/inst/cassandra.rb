@@ -250,13 +250,8 @@ module Oboe
   end
 end
 
-<<<<<<< HEAD
-if defined?(::Cassandra) and Oboe::Config[:cassandra][:enabled]
-  Oboe.logger.info "[oboe/loading] Instrumenting cassandra"
-=======
 if defined?(::Cassandra) && Oboe::Config[:cassandra][:enabled]
-  Oboe.logger.info '[oboe/loading] Instrumenting cassandra' if Oboe::Config[:verbose]
->>>>>>> master
+  Oboe.logger.info "[oboe/loading] Instrumenting cassandra"
 
   class ::Cassandra
     include Oboe::Inst::Cassandra
@@ -280,5 +275,3 @@ if defined?(::Cassandra) && Oboe::Config[:cassandra][:enabled]
     end
   end # class Cassandra
 end
-
-

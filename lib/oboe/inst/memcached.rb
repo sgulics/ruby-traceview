@@ -7,11 +7,7 @@ module Oboe
       include Oboe::API::Memcache
 
       def self.included(cls)
-<<<<<<< HEAD
         Oboe.logger.info "[oboe/loading] Instrumenting memcached"
-=======
-        Oboe.logger.info '[oboe/loading] Instrumenting memcached' if Oboe::Config[:verbose]
->>>>>>> master
 
         cls.class_eval do
           MEMCACHE_OPS.reject { |m| !method_defined?(m) }.each do |m|
@@ -50,13 +46,8 @@ module Oboe
           if ::Memcached::Rails.method_defined? :get_multi
             alias get_multi_without_oboe get_multi
             alias get_multi get_multi_with_oboe
-<<<<<<< HEAD
           else
-            Oboe.logger.warn "[oboe/loading] Couldn't properly instrument Memcached (:get_multi).  Partial traces may occur."
-=======
-          elsif Oboe::Config[:verbose]
-            Oboe.logger.warn '[oboe/loading] Couldn\'t properly instrument Memcached.  Partial traces may occur.'
->>>>>>> master
+            Oboe.logger.warn '[oboe/loading] Couldn\'t properly instrument Memcached (:get_multi).  Partial traces may occur.'
           end
         end
       end
