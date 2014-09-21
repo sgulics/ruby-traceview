@@ -57,7 +57,7 @@ module Oboe
 
       # Collector Thread
       @thread_id = Thread.new do
-        while true do
+        loop do
           collectors.each do |b|
             kvs.merge! b.call
           end
