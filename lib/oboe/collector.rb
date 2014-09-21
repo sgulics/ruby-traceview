@@ -1,4 +1,9 @@
 module Oboe
+  ##
+  # The Collector class is used to register blocks of code
+  # that collect various metrics and run them in a dedicated
+  # thread reporting the results to the TraceView dashboard.
+  #
   class Collector
     attr_accessor :collectors
     attr_accessor :sleep_interval
@@ -10,7 +15,12 @@ module Oboe
       @sleep_interval = Oboe::Config[:collector][:sleep_interval]
     end
 
-    def register(proc = nil, &block)
+    ##
+    # Register a block of code to be periodically run in the
+    # collector thread.  It should return a hash of key/values
+    # that will then be sent to TraceView dashboard as metrics.
+    #
+    def register(work_proc = nil, &block)
       if block_given?
         collectors << block
       elsif proc
@@ -20,17 +30,21 @@ module Oboe
       end
     end
 
+    ##
+    # Start the collector thread with all of the registered collector blocks
+    #
     def start
       kvs = {}
 
       raise "no collectors registered" if @collectors.empty?
 
+      # Collector Thread
       Thread.new do
         while true do
           collectors.each do |b|
             kvs.merge! b.call
           end
-            
+
           Oboe::API.start_trace('RubyMetrics', nil, { 'Force' => true, :ProcessName => Process.pid } ) do
             Oboe::API.log('RubyMetrics', 'metrics', kvs)
           end
@@ -49,6 +63,16 @@ module Oboe
 end
 
 Oboe.collector = ::Oboe::Collector.new
-    
-require 'oboe/collectors/gc'
-require 'oboe/collectors/memory'
+
+# Load all of the collector files in lib/oboe/collectors
+pattern = File.join(File.dirname(__FILE__), 'collectors', '*.rb')
+Dir.glob(pattern) do |f|
+  begin
+    require f
+  rescue => e
+    Oboe.logger.error "[oboe/loading] Error loading collector file '#{f}' : #{e}"
+  end
+end
+
+# Start the collector thread
+Oboe.collector.start
