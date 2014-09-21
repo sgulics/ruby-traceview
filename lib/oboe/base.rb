@@ -30,10 +30,11 @@ module OboeBase
   extend ::Oboe::ThreadLocal
 
   attr_accessor :reporter
+  attr_accessor :collector
   attr_accessor :loaded
-  attr_accessor :sample_source
-  attr_accessor :sample_rate
-  thread_local :layer_op
+  thread_local  :sample_source
+  thread_local  :sample_rate
+  thread_local  :layer_op
 
   def self.included(_)
     self.loaded = true
