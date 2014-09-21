@@ -16,6 +16,20 @@ module Oboe
     end
 
     ##
+    # Load all of the collector files in lib/oboe/collectors
+    #
+    def load
+      pattern = File.join(File.dirname(__FILE__), 'collectors', '*.rb')
+      Dir.glob(pattern) do |f|
+        begin
+          require f
+        rescue => e
+          Oboe.logger.error "[oboe/loading] Error loading collector file '#{f}' : #{e}"
+        end
+      end
+    end
+
+    ##
     # Register a block of code to be periodically run in the
     # collector thread.  It should return a hash of key/values
     # that will then be sent to TraceView dashboard as metrics.
@@ -64,15 +78,6 @@ end
 
 Oboe.collector = ::Oboe::Collector.new
 
-# Load all of the collector files in lib/oboe/collectors
-pattern = File.join(File.dirname(__FILE__), 'collectors', '*.rb')
-Dir.glob(pattern) do |f|
-  begin
-    require f
-  rescue => e
-    Oboe.logger.error "[oboe/loading] Error loading collector file '#{f}' : #{e}"
-  end
-end
-
-# Start the collector thread
-Oboe.collector.start
+# Don't start the collector when running tests.
+# The test suite will boot the collector manually
+Oboe.collector.start unless ENV.key('OBOE_GEM_TEST')
