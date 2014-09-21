@@ -5,9 +5,12 @@ module Oboe
   # thread reporting the results to the TraceView dashboard.
   #
   class Collector
+    extend ::Oboe::ThreadLocal
+
     attr_accessor :collectors
     attr_accessor :sleep_interval
     attr_accessor :time_to_exit
+    thread_local  :thread_id
 
     def initialize
       @collectors = []
@@ -53,7 +56,7 @@ module Oboe
       raise "no collectors registered" if @collectors.empty?
 
       # Collector Thread
-      Thread.new do
+      @thread_id = Thread.new do
         while true do
           collectors.each do |b|
             kvs.merge! b.call
@@ -73,10 +76,15 @@ module Oboe
       Oboe.logger.warn "[oboe/warn] Collector exiting on exception: #{e.message}"
       raise
     end
+
+    def stop
+      Thread.kill(@thread_id)
+    end
   end
 end
 
 Oboe.collector = ::Oboe::Collector.new
+Oboe.collector.load
 
 # Don't start the collector when running tests.
 # The test suite will boot the collector manually

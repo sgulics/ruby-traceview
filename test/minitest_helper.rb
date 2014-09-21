@@ -19,6 +19,9 @@ if defined?(JRUBY_VERSION)
   ENV['JAVA_OPTS'] = "-J-javaagent:/usr/local/tracelytics/tracelyticsagent.jar"
 end
 
+# Enabled GC ahead of time for GC metrics tests
+GC::Profiler.enable if RUBY_VERSION >= '1.9.3'
+
 require 'rubygems'
 require 'bundler'
 
