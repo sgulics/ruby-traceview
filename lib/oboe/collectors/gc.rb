@@ -1,7 +1,10 @@
 # Copyright (c) 2014 AppNeta, Inc.
 # All rights reserved.
 
-if defined?(::GC::Profiler) and ::GC::Profiler.enabled?
+#
+# MRI Ruby GC statistics collection
+#
+if !defined?(JRUBY_VERSION) && defined?(::GC::Profiler) && ::GC::Profiler.enabled?
   Oboe.collector.register do
     report_kvs = {}
     kvs = [ :count, :minor_gc_count, :major_gc_count, :total_time, :total_allocated_object,
