@@ -36,10 +36,9 @@ begin
   require 'oboe/config'
 
   if Oboe.loaded
-    require 'oboe/collector_thread'
     require 'oboe/loading'
     require 'oboe/method_profiling'
-    require 'oboe/collectors'
+    require 'oboe/collector'
     require 'oboe/instrumentation'
 
     # Frameworks
