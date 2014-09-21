@@ -120,6 +120,20 @@ module Oboe
           x.to_s
         end
       end
+
+      ##
+      # getaddr
+      #
+      # Attempt to get the address of the host and port.  Used
+      # to detect which listeners are configured under Unicorn.
+      # See oboe/collectors/unicorn.rb
+      #
+      # Taken from heroku/rack-queue-metrics
+      def getaddr
+        IPSocket.getaddress(Socket.gethostname).to_s + ':' + ENV['PORT']
+      rescue SocketError
+        nil
+      end
     end
   end
 end
