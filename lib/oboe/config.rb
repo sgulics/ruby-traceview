@@ -79,9 +79,8 @@ module Oboe
         @@config[:verbose] = false
 
         # Internal Collectors
-        @@config[:collectors] = {}
-        @@config[:collectors][:gc]       = { :enabled => true, :sleep_interval => 60 }
-        @@config[:collectors][:memory]   = { :enabled => true, :sleep_interval => 120 }
+        @@config[:collector] = {}
+        @@config[:collector] = { :enabled => true, :sleep_interval => 60 }
       end
 
       ##
