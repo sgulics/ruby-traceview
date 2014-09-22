@@ -35,13 +35,24 @@ describe Oboe::Collector do
     traces[1]['Layer'].must_equal "RubyMetrics"
     traces[1]['Label'].must_equal "metrics"
 
-    traces[1].has_key?('count').must_equal true
-    traces[1].has_key?('heap_live_slot').must_equal true
-    traces[1].has_key?('heap_free_slot').must_equal true
-    traces[1].has_key?('total_allocated_object').must_equal true
-    traces[1].has_key?('total_freed_object').must_equal true
-    traces[1].has_key?('minor_gc_count').must_equal true
-    traces[1].has_key?('major_gc_count').must_equal true
+    # Break GC KVs down by Ruby version
+    # https://gist.github.com/pglombardo/4157752068c0f5a8c7a8#metrics-to-be-added-to-host-metrics-1
+    if RUBY_VERSION >= '1.9.3'
+      traces[1].has_key?('count').must_equal true
+    end
+
+    if RUBY_VERSION >= '2.0'
+      traces[1].has_key?('total_allocated_object').must_equal true
+      traces[1].has_key?('total_freed_object').must_equal true
+    end
+
+    if RUBY_VERSION >= '2.1'
+      traces[1].has_key?('minor_gc_count').must_equal true
+      traces[1].has_key?('major_gc_count').must_equal true
+      traces[1].has_key?('heap_live_slot').must_equal true
+      traces[1].has_key?('heap_free_slot').must_equal true
+    end
+
     traces[1]['RubyVersion'].must_equal RUBY_VERSION
     traces[1].has_key?('ThreadCount').must_equal true
     traces[1].has_key?('VmRSS').must_equal true
