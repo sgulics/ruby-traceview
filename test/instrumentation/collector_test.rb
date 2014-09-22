@@ -38,15 +38,13 @@ if RUBY_VERSION >= '1.9.3' && !defined?(JRUBY_VERSION)
       # Spawn a Unicorn webserver listener so we can validate metrics collection
       @server = HttpServer.new(TestHandler.new, :listeners => [ '127.0.0.1:8080' ] )
       @server.start
-      sleep 2
-
-      Raindrops::Linux.tcp_listener_stats.must_equal '127.0.0.1:8080'
+      sleep 5
 
       Oboe.collector.start
 
       # Allow the collector thread to spawn, collect and report
       # metrics
-      sleep 2
+      sleep 5
 
       traces = get_all_traces
       traces.count.must_equal 3
