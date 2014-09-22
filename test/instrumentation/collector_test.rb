@@ -40,6 +40,8 @@ if RUBY_VERSION >= '1.9.3' && !defined?(JRUBY_VERSION)
       @server.start
       sleep 2
 
+      Raindrops::Linux.tcp_listener_stats.must_equal '127.0.0.1:8080'
+
       Oboe.collector.start
 
       # Allow the collector thread to spawn, collect and report
@@ -78,7 +80,6 @@ if RUBY_VERSION >= '1.9.3' && !defined?(JRUBY_VERSION)
       traces[1].has_key?('VmRSS').must_equal true
 
       # Unicorn KVs
-      Raindrops::Linux.tcp_listener_stats.must_equal '127.0.0.1:8080'
       traces[1]['listener0_addr'].must_equal '127.0.0.1:8080'
       traces[1]['listener0_queued'].must_equal '0'
       traces[1]['listener0_active'].must_equal '0'
