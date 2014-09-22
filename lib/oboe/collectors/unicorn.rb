@@ -6,15 +6,17 @@ if defined?(::Unicorn)
     report_kvs = {}
 
     if defined?(::Raindrops::Linux)
-      # Here we retrieve all Unicorn listeners (there may be more than one)
+      # Here we retrieve any/all Unicorn listeners
       # and we report statistics for each.
       listeners = Unicorn.listener_names
 
-      listeners.each_with_index do |listener_addr, i|
-        stats = Raindrops::Linux.tcp_listener_stats([ listener_addr ])[ listener_addr ]
-        report_kvs["listener#{i}_addr"] = listener_addr
-        report_kvs["listener#{i}_queued"] = stats.queued
-        report_kvs["listener#{i}_active"] = stats.active
+      if listeners.is_a?(Array) && !listeners.empty?
+        listeners.each_with_index do |listener_addr, i|
+          stats = Raindrops::Linux.tcp_listener_stats([ listener_addr ])[ listener_addr ]
+          report_kvs["listener#{i}_addr"] = listener_addr
+          report_kvs["listener#{i}_queued"] = stats.queued
+          report_kvs["listener#{i}_active"] = stats.active
+        end
       end
     end
 
