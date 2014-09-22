@@ -9,6 +9,7 @@ if defined?(::Unicorn)
       # Here we retrieve any/all Unicorn listeners
       # and we report statistics for each.
       listeners = Unicorn.listener_names
+      puts listeners
 
       if listeners.is_a?(Array) && !listeners.empty?
         listeners.each_with_index do |listener_addr, i|
