@@ -28,6 +28,7 @@ if RUBY_VERSION >= '1.9.3' && !defined?(JRUBY_VERSION)
 
     after do
       @server.stop(false)
+      sleep 2
     end
 
     it 'should be loaded, defined, instantiated and ready' do
