@@ -12,10 +12,18 @@ if defined?(::Unicorn)
 
       if listeners.is_a?(Array) && !listeners.empty?
         listeners.each_with_index do |listener_addr, i|
-          stats = Raindrops::Linux.tcp_listener_stats([ listener_addr ])[ listener_addr ]
-          report_kvs["listener#{i}_addr"] = listener_addr
-          report_kvs["listener#{i}_queued"] = stats.queued
-          report_kvs["listener#{i}_active"] = stats.active
+          begin
+            stats = Raindrops::Linux.tcp_listener_stats([ listener_addr ])[ listener_addr ]
+            report_kvs["listener#{i}_addr"] = listener_addr
+            report_kvs["listener#{i}_queued"] = stats.queued
+            report_kvs["listener#{i}_active"] = stats.active
+          rescue
+            # We log what we can and don't complain (unless in test env)
+            if ENV.key('OBOE_GEM_TEST')
+              Oboe.logger.warn "[oboe/collector/unicorn] #{e.inspect}"
+              Oboe.logger.warn e.backtrace.join(", ")
+            end
+          end
         end
       end
     end
