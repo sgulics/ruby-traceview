@@ -28,7 +28,6 @@ gem 'resque'
 gem 'redis'
 gem 'faraday'
 gem 'excon'
-gem 'unicorn'
 
 if RUBY_VERSION >= '1.9'
   gem 'moped'
@@ -40,6 +39,7 @@ end
 unless defined?(JRUBY_VERSION)
   gem 'memcached', '1.7.2' if RUBY_VERSION < '2.0.0'
   gem 'bson_ext' # For Mongo, Yours Truly
+  gem 'unicorn'
 end
 
 # Instrumented Frameworks
