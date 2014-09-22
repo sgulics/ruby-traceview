@@ -17,9 +17,11 @@ if defined?(::Unicorn)
             report_kvs["listener#{i}_addr"] = listener_addr
             report_kvs["listener#{i}_queued"] = stats.queued
             report_kvs["listener#{i}_active"] = stats.active
-          rescue
+          rescue => e
             # We log what we can and don't complain (unless in test env)
             if ENV.key('OBOE_GEM_TEST')
+              $stderr.syswrite("#{e.class}: #{e.message} #{e.backtrace.empty?}\n")
+              $stderr.syswrite("#{listeners}\n")
               Oboe.logger.warn "[oboe/collector/unicorn] #{e.inspect}"
               Oboe.logger.warn e.backtrace.join(", ")
             end
