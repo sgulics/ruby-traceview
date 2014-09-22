@@ -16,7 +16,7 @@ module Oboe
                          :memcache, :mongo, :moped, :rack, :redis, :resque]
 
     class << self
-      def initialize(_data = {})
+      def setup(_data = {})
         # Setup default instrumentation values
         @@instrumentation.each do |k|
           @@config[k] = {}
@@ -165,4 +165,4 @@ module Oboe
   end
 end
 
-Oboe::Config.initialize
+Oboe::Config.setup
