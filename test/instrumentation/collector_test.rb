@@ -19,16 +19,9 @@ if RUBY_VERSION >= '1.9.3' && !defined?(JRUBY_VERSION)
   describe Oboe::Collector do
     before do
       clear_all_traces
-
-      # Spawn a Unicorn webserver listener so we can validate metrics collection
-      @server = HttpServer.new(TestHandler.new, :listeners => [ '127.0.0.1:8080' ] )
-      @server.start
-      sleep 2
     end
 
     after do
-      @server.stop(false)
-      sleep 2
     end
 
     it 'should be loaded, defined, instantiated and ready' do
@@ -42,9 +35,14 @@ if RUBY_VERSION >= '1.9.3' && !defined?(JRUBY_VERSION)
     end
 
     it 'should generate metric traces' do
+      # Spawn a Unicorn webserver listener so we can validate metrics collection
+      @server = HttpServer.new(TestHandler.new, :listeners => [ '127.0.0.1:8080' ] )
+      @server.start
+      sleep 2
+
       Oboe.collector.start
 
-      # Allow the thread to spawn, collect and report
+      # Allow the collector thread to spawn, collect and report
       # metrics
       sleep 2
 
@@ -85,6 +83,8 @@ if RUBY_VERSION >= '1.9.3' && !defined?(JRUBY_VERSION)
       traces[1]['listener0_active'].must_equal '0'
 
       Oboe.collector.stop
+
+      @server.stop(false)
     end
   end
 end
