@@ -3,8 +3,6 @@ require 'minitest_helper'
 if RUBY_VERSION >= '1.9.3' && !defined?(JRUBY_VERSION)
   GC::Profiler.enable
 
-  include Unicorn
-
   class TestHandler
     def call(env)
       while env['rack.input'].read(4096)
@@ -36,7 +34,7 @@ if RUBY_VERSION >= '1.9.3' && !defined?(JRUBY_VERSION)
 
     it 'should generate metric traces' do
       # Spawn a Unicorn webserver listener so we can validate metrics collection
-      @server = HttpServer.new(TestHandler.new, :listeners => [ '127.0.0.1:8080' ] )
+      @server = ::Unicorn::HttpServer.new(TestHandler.new, :listeners => [ '127.0.0.1:8080' ] )
       @server.start
       sleep 5
 
