@@ -1,6 +1,6 @@
 require 'minitest_helper'
 
-if RUBY_VERSION >= '1.9.3'
+if RUBY_VERSION >= '1.9.3' && !defined?(JRUBY_VERSION)
   ENV['PORT'] = '12345'
   GC::Profiler.enable
 

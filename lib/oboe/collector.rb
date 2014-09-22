@@ -86,6 +86,8 @@ end
 Oboe.collector = ::Oboe::Collector.new
 Oboe.collector.load
 
-# Don't start the collector when running tests.
-# The test suite will boot the collector manually
-Oboe.collector.start unless ENV.key('OBOE_GEM_TEST')
+unless defined?(JRUBY_VERSION) or ENV.key('OBOE_GEM_TEST')
+  # Don't start the collector when running tests.
+  # The test suite will boot the collector manually
+  Oboe.collector.start
+end
