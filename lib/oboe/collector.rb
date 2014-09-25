@@ -59,7 +59,11 @@ module Oboe
       @thread_id = Thread.new do
         loop do
           collectors.each do |b|
-            kvs.merge! b.call
+            begin
+              kvs.merge! b.call
+            rescue => e
+              Oboe.logger.warn "[oboe/collector] #{e.inspect}"
+            end
           end
 
           Oboe::API.start_trace('RubyMetrics', nil, { 'Force' => true, :ProcessName => Process.pid } ) do
