@@ -5,11 +5,17 @@ if defined?(::Unicorn)
   Oboe.collector.register do
     report_kvs = {}
 
-    if defined?(::Raindrops::Linux)
+    if defined?(::Raindrops::Linux.tcp_listener_stats)
       # Here we retrieve any/all Unicorn listeners
       # and we report statistics for each.
-      listeners = Unicorn.listener_names
-      puts listeners
+      if Unicorn.respond_to?(:listener_names)
+        listeners = Unicorn.listener_names
+      end
+
+      if ENV['OBOE_GEM_TEST']
+        puts "no listener_names!!!" unless Unicorn.respond_to?(:listener_names)
+        puts "no tcp_listener_stats!!!" unless Raindrops::Linux.respond_to?(:tcp_listener_stats)
+      end
 
       if listeners.is_a?(Array) && !listeners.empty?
         listeners.each_with_index do |listener_addr, i|
