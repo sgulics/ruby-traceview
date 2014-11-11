@@ -97,9 +97,8 @@ desc 'Rebuild the gem\'s c extension'
 task :recompile => [:distclean, :compile]
 
 task :console do
-  require 'pry'
   GC::Profiler.enable
-  require 'oboe'
+  Bundler.require(:default, :development)
   ARGV.clear
   Pry.start
 end

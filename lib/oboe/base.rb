@@ -36,8 +36,12 @@ module OboeBase
   thread_local  :sample_rate
   thread_local  :layer_op
 
-  def self.included(_)
-    self.loaded = true
+  def self.included(cls)
+    cls.loaded = true
+  end
+
+  def self.extended(cls)
+    cls.loaded = true
   end
 
   def tracing_layer_op?(operation)
@@ -96,7 +100,7 @@ module OboeBase
   end
 
   def heroku?
-    false
+    ENV.key?('TRACEVIEW_URL')
   end
 
   ##

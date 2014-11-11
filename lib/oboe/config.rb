@@ -81,6 +81,8 @@ module Oboe
         # Internal Collectors
         @@config[:collector] = {}
         @@config[:collector] = { :enabled => true, :sleep_interval => 60 }
+
+        @@config[:verbose] = ENV.key?('OBOE_GEM_VERBOSE') ? true : false
       end
 
       ##

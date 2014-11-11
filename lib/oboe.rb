@@ -7,6 +7,7 @@ begin
   require 'oboe/logger'
   require 'oboe/util'
   require 'oboe/xtrace'
+  require 'oboe/support'
 
   # If OboeHeroku is already defined then we are in a PaaS environment
   # with an alternate metal (see the oboe-heroku gem)
@@ -18,8 +19,8 @@ begin
         require '/usr/local/tracelytics/tracelyticsagent.jar'
         require 'joboe_metal'
       else
-        require 'oboe_metal.so'
-        require 'oboe_metal'
+        require "oboe_metal.so"
+        require "oboe_metal.rb"
       end
     rescue LoadError
       Oboe.loaded = false
@@ -34,9 +35,9 @@ begin
   end
 
   require 'oboe/config'
+  require 'oboe/loading'
 
   if Oboe.loaded
-    require 'oboe/loading'
     require 'oboe/method_profiling'
     require 'oboe/collector'
     require 'oboe/instrumentation'
