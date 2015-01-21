@@ -13,7 +13,13 @@ module Oboe
 
     @@instrumentation = [:action_controller, :action_view, :active_record,
                          :cassandra, :dalli, :em_http_request, :faraday, :nethttp, :memcached,
-                         :memcache, :mongo, :moped, :rack, :redis, :resque]
+                         :memcache, :mongo, :moped, :rack, :redis, :resque, :sequel, :typhoeus]
+    ##
+    # Return the raw nested hash.
+    #
+    def self.show
+      @@config
+    end
 
     class << self
       def setup(_data = {})
@@ -24,25 +30,6 @@ module Oboe
           @@config[k][:collect_backtraces] = false
           @@config[k][:log_args] = true
         end
-
-        # Beta instrumentation disabled by default
-        Oboe::Config[:em_http_request][:enabled] = false
-
-        # Set collect_backtraces defaults
-        Oboe::Config[:action_controller][:collect_backtraces] = true
-        Oboe::Config[:active_record][:collect_backtraces] = true
-        Oboe::Config[:action_view][:collect_backtraces] = true
-        Oboe::Config[:cassandra][:collect_backtraces] = true
-        Oboe::Config[:dalli][:collect_backtraces] = false
-        Oboe::Config[:faraday][:collect_backtraces] = false
-        Oboe::Config[:em_http_request][:collect_backtraces] = false
-        Oboe::Config[:memcache][:collect_backtraces] = false
-        Oboe::Config[:memcached][:collect_backtraces] = false
-        Oboe::Config[:mongo][:collect_backtraces] = true
-        Oboe::Config[:moped][:collect_backtraces] = true
-        Oboe::Config[:nethttp][:collect_backtraces] = true
-        Oboe::Config[:redis][:collect_backtraces] = false
-        Oboe::Config[:resque][:collect_backtraces] = true
 
         # Special instrument specific flags
         #
@@ -84,6 +71,27 @@ module Oboe
 
         @@config[:verbose] = ENV.key?('OBOE_GEM_VERBOSE') ? true : false
       end
+
+      # Beta instrumentation disabled by default
+      Oboe::Config[:em_http_request][:enabled] = false
+
+      # Set collect_backtraces defaults
+      Oboe::Config[:action_controller][:collect_backtraces] = true
+      Oboe::Config[:active_record][:collect_backtraces] = true
+      Oboe::Config[:action_view][:collect_backtraces] = true
+      Oboe::Config[:cassandra][:collect_backtraces] = true
+      Oboe::Config[:dalli][:collect_backtraces] = false
+      Oboe::Config[:faraday][:collect_backtraces] = false
+      Oboe::Config[:em_http_request][:collect_backtraces] = false
+      Oboe::Config[:memcache][:collect_backtraces] = false
+      Oboe::Config[:memcached][:collect_backtraces] = false
+      Oboe::Config[:mongo][:collect_backtraces] = true
+      Oboe::Config[:moped][:collect_backtraces] = true
+      Oboe::Config[:nethttp][:collect_backtraces] = true
+      Oboe::Config[:redis][:collect_backtraces] = false
+      Oboe::Config[:resque][:collect_backtraces] = true
+      Oboe::Config[:sequel][:collect_backtraces] = true
+      Oboe::Config[:typhoeus][:collect_backtraces] = false
 
       ##
       # Update the config with the passed in hash of

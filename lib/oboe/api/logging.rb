@@ -63,14 +63,39 @@ module Oboe
       #
       # Returns nothing.
       def log_start(layer, xtrace, opts = {})
-        return if !Oboe.loaded || Oboe.never? || 
+        return if !Oboe.loaded || Oboe.never? ||
                   (opts.key?(:URL) && ::Oboe::Util.static_asset?(opts[:URL]))
 
-        Oboe::Context.fromString(xtrace) if xtrace && !xtrace.to_s.empty?
+        Oboe::Context.fromString(xtrace) if Oboe.pickup_context?(xtrace)
 
         if Oboe.tracing?
+          # Pre-existing context.  Either we inherited context from an
+          # incoming X-Trace request header or under JRuby, Joboe started
+          # tracing before the JRuby code was called (e.g. Tomcat)
+          Oboe.is_continued_trace = true
+
+          if Oboe.has_xtrace_header
+            opts[:TraceOrigin] = :continued_header
+          elsif Oboe.has_incoming_context
+            opts[:TraceOrigin] = :continued_context
+          else
+            opts[:TraceOrigin] = :continued
+          end
+
           log_entry(layer, opts)
-        elsif opts.key?('Force') || Oboe.sample?(opts.merge(:layer => layer, :xtrace => xtrace))
+
+        elsif opts.key?('Force')
+          # Forced tracing: used by __Init reporting
+          opts[:TraceOrigin] = :forced
+          log_event(layer, 'entry', Oboe::Context.startTrace, opts)
+
+        elsif Oboe.sample?(opts.merge(:layer => layer, :xtrace => xtrace))
+          # Probablistic tracing of a subset of requests based off of
+          # sample rate and sample source
+          opts[:SampleRate]        = Oboe.sample_rate
+          opts[:SampleSource]      = Oboe.sample_source
+          opts[:TraceOrigin] = :always_sampled
+
           log_event(layer, 'entry', Oboe::Context.startTrace, opts)
         end
       end
@@ -84,7 +109,7 @@ module Oboe
         if Oboe.loaded
           log_event(layer, 'exit', Oboe::Context.createEvent, opts)
           xtrace = Oboe::Context.toString
-          Oboe::Context.clear
+          Oboe::Context.clear unless Oboe.has_incoming_context?
           xtrace
         end
       end
@@ -151,6 +176,9 @@ module Oboe
         if Oboe.loaded
           event.addInfo('Layer', layer.to_s) if layer
           event.addInfo('Label', label.to_s)
+
+          Oboe.layer = layer if label == 'entry'
+          Oboe.layer = nil   if label == 'exit'
 
           opts.each do |k, v|
             event.addInfo(k.to_s, v.to_s) if valid_key? k
