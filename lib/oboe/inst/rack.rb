@@ -37,6 +37,8 @@ module Oboe
         report_kvs['Forwarded-Port']    = env['HTTP_X_FORWARDED_PORT']   if env.key?('HTTP_X_FORWARDED_PORT')
 
         report_kvs['Ruby.Oboe.Version'] = ::Oboe::Version::STRING
+        report_kvs['ProcessID']         = Process.pid
+        report_kvs['ThreadID']          = Thread.current.to_s[/0x\w*/]
       rescue StandardError => e
         # Discard any potential exceptions. Debug log and report whatever we can.
         Oboe.logger.debug "[oboe/debug] Rack KV collection error: #{e.inspect}"
@@ -50,16 +52,19 @@ module Oboe
       report_kvs = {}
       report_kvs[:URL] = URI.unescape(req.path)
 
-      if Oboe.always?
-        # Only report these KVs under tracing_mode 'always' (never for 'through')
-        report_kvs[:SampleRate]        = Oboe.sample_rate
-        report_kvs[:SampleSource]      = Oboe.sample_source
-      end
+      # Under JRuby, JOboe may have already started a trace.  Make note of this
+      # if so and don't clear context on log_end (see oboe/api/logging.rb)
+      Oboe.has_incoming_context = Oboe.tracing?
 
+      # Check for and validate X-Trace request header to pick up tracing context
       xtrace = env.is_a?(Hash) ? env['HTTP_X_TRACE'] : nil
+      xtrace_header = xtrace if xtrace && Oboe::XTrace.valid?(xtrace)
+      Oboe.has_xtrace_header = xtrace_header
 
-      result, xtrace = Oboe::API.start_trace('rack', xtrace, report_kvs) do
+      Oboe.is_continued_trace = Oboe.has_incoming_context or Oboe.has_xtrace_header
 
+      # The actual block of work to instrument
+      result, xtrace = Oboe::API.start_trace('rack', xtrace_header, report_kvs) do
         status, headers, response = @app.call(env)
 
         if Oboe.tracing?
@@ -73,8 +78,13 @@ module Oboe
       xtrace = e.instance_variable_get(:@xtrace)
       raise
     ensure
-      result[1]['X-Trace'] = xtrace if result && Oboe::XTrace.valid?(xtrace)
+      if result && Oboe::XTrace.valid?(xtrace)
+        unless defined?(JRUBY_VERSION) && Oboe.is_continued_trace?
+          result[1]['X-Trace'] = xtrace
+        end
+      end
       return result
     end
   end
 end
+

@@ -11,10 +11,10 @@ module Oboe
   module Config
     @@config = {}
 
-    @@instrumentation = [ :action_controller, :action_view, :active_record,
-                          :cassandra, :dalli, :em_http_request, :eventmachine,
-                          :faraday, :nethttp, :memcached, :memcache, :mongo,
-                          :moped, :rack, :redis, :resque ]
+    @@instrumentation = [:action_controller, :action_view, :active_record,
+                         :cassandra, :dalli, :em_http_request, :eventmachine,
+                         :faraday, :nethttp, :memcached, :memcache, :mongo, 
+                         :moped, :rack, :redis, :resque, :sequel, :typhoeus]
     ##
     # Return the raw nested hash.
     #
@@ -51,6 +51,8 @@ module Oboe
       Oboe::Config[:nethttp][:collect_backtraces] = true
       Oboe::Config[:redis][:collect_backtraces] = false
       Oboe::Config[:resque][:collect_backtraces] = true
+      Oboe::Config[:sequel][:collect_backtraces] = true
+      Oboe::Config[:typhoeus][:collect_backtraces] = false
 
       # Special instrument specific flags
       #
