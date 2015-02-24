@@ -12,8 +12,9 @@ module Oboe
     @@config = {}
 
     @@instrumentation = [:action_controller, :action_view, :active_record,
-                         :cassandra, :dalli, :em_http_request, :faraday, :nethttp, :memcached,
-                         :memcache, :mongo, :moped, :rack, :redis, :resque, :sequel, :typhoeus]
+                         :cassandra, :dalli, :em_http_request, :faraday, :grape, :nethttp,
+                         :memcached, :memcache, :mongo, :moped, :rack, :redis, :resque,
+                         :sequel, :typhoeus]
     ##
     # Return the raw nested hash.
     #
@@ -70,28 +71,87 @@ module Oboe
         @@config[:collector] = { :enabled => true, :sleep_interval => 60 }
 
         @@config[:verbose] = ENV.key?('OBOE_GEM_VERBOSE') ? true : false
+
+        # Beta instrumentation disabled by default
+        Oboe::Config[:em_http_request][:enabled] = false
+
+        # Set collect_backtraces defaults
+        Oboe::Config[:action_controller][:collect_backtraces] = true
+        Oboe::Config[:active_record][:collect_backtraces] = true
+        Oboe::Config[:action_view][:collect_backtraces] = true
+        Oboe::Config[:cassandra][:collect_backtraces] = true
+        Oboe::Config[:dalli][:collect_backtraces] = false
+        Oboe::Config[:faraday][:collect_backtraces] = false
+        Oboe::Config[:grape][:collect_backtraces] = true
+        Oboe::Config[:em_http_request][:collect_backtraces] = false
+        Oboe::Config[:memcache][:collect_backtraces] = false
+        Oboe::Config[:memcached][:collect_backtraces] = false
+        Oboe::Config[:mongo][:collect_backtraces] = true
+        Oboe::Config[:moped][:collect_backtraces] = true
+        Oboe::Config[:nethttp][:collect_backtraces] = true
+        Oboe::Config[:redis][:collect_backtraces] = false
+        Oboe::Config[:resque][:collect_backtraces] = true
+        Oboe::Config[:sequel][:collect_backtraces] = true
+        Oboe::Config[:typhoeus][:collect_backtraces] = false
+
+        # :link_workers - associates enqueue operations with the jobs they queue by piggybacking
+        #                 an additional argument that is stripped prior to job proecessing
+        #                 !!Note: Make sure both the queue side and the Resque workers are instrumented
+        #                 or jobs will fail
+        #                 (Default: false)
+        @@config[:resque][:link_workers] = false
+
+        # Setup an empty host blacklist (see: Oboe::API::Util.blacklisted?)
+        @@config[:blacklist] = []
+
+        # Access Key is empty until loaded from config file or env var
+        @@config[:access_key] = ''
+
+        # The oboe Ruby client has the ability to sanitize query literals
+        # from SQL statements.  By default this is disabled.  Enable to
+        # avoid collecting and reporting query literals to TraceView.
+        @@config[:sanitize_sql] = false
+
+        # Do Not Trace
+        # These two values allow you to configure specific URL patterns to
+        # never be traced.  By default, this is set to common static file
+        # extensions but you may want to customize this list for your needs.
+        #
+        # dnt_regexp and dnt_opts is passed to Regexp.new to create
+        # a regular expression object.  That is then used to match against
+        # the incoming request path.
+        #
+        # The path string originates from the rack layer and is retrieved
+        # as follows:
+        #
+        #   req = ::Rack::Request.new(env)
+        #   path = URI.unescape(req.path)
+        #
+        # Usage:
+        #   Oboe::Config[:dnt_regexp] = "lobster$"
+        #   Oboe::Config[:dnt_opts]   = Regexp::IGNORECASE
+        #
+        # This will ignore all requests that end with the string lobster
+        # regardless of case
+        #
+        # Requests with positive matches (non nil) will not be traced.
+        # See lib/oboe/util.rb: Oboe::Util.static_asset?
+        #
+        @@config[:dnt_regexp] = "\.(jpg|jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|pdf|txt|tar|wav|bmp|rtf|js|flv|swf|ttf|woff|svg|less)$"
+        @@config[:dnt_opts]   = Regexp::IGNORECASE
+
+        if ENV.key?('OPENSHIFT_TRACEVIEW_TLYZER_IP')
+          # We're running on OpenShift
+          @@config[:tracing_mode] = 'always'
+          @@config[:reporter_host] = ENV['OPENSHIFT_TRACEVIEW_TLYZER_IP']
+          @@config[:reporter_port] = ENV['OPENSHIFT_TRACEVIEW_TLYZER_PORT']
+        else
+          # The default configuration
+          @@config[:tracing_mode] = 'through'
+          @@config[:reporter_host] = '127.0.0.1'
+          @@config[:reporter_port] = '7831'
+        end
       end
-
-      # Beta instrumentation disabled by default
-      Oboe::Config[:em_http_request][:enabled] = false
-
-      # Set collect_backtraces defaults
-      Oboe::Config[:action_controller][:collect_backtraces] = true
-      Oboe::Config[:active_record][:collect_backtraces] = true
-      Oboe::Config[:action_view][:collect_backtraces] = true
-      Oboe::Config[:cassandra][:collect_backtraces] = true
-      Oboe::Config[:dalli][:collect_backtraces] = false
-      Oboe::Config[:faraday][:collect_backtraces] = false
-      Oboe::Config[:em_http_request][:collect_backtraces] = false
-      Oboe::Config[:memcache][:collect_backtraces] = false
-      Oboe::Config[:memcached][:collect_backtraces] = false
-      Oboe::Config[:mongo][:collect_backtraces] = true
-      Oboe::Config[:moped][:collect_backtraces] = true
-      Oboe::Config[:nethttp][:collect_backtraces] = true
-      Oboe::Config[:redis][:collect_backtraces] = false
-      Oboe::Config[:resque][:collect_backtraces] = true
-      Oboe::Config[:sequel][:collect_backtraces] = true
-      Oboe::Config[:typhoeus][:collect_backtraces] = false
 
       ##
       # Update the config with the passed in hash of
