@@ -137,7 +137,7 @@ describe Oboe::Inst::FaradayConnection do
     traces[2]['RemoteProtocol'].must_equal 'HTTP'
     traces[2]['RemoteHost'].must_equal 'www.curlmyip.de'
     traces[2]['ServiceArg'].must_equal '/?q=1'
-    traces[2]['HTTPMethod'].downcase.must_equal 'get'
+    traces[2]['HTTPMethod'].must_equal 'GET'
 
     traces[2]['Layer'].must_equal 'faraday'
     traces[2]['Label'].must_equal 'info'
