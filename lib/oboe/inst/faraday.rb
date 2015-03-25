@@ -32,7 +32,7 @@ module Oboe
           kvs['RemoteHost'] = @url_prefix.host
           kvs['RemotePort'] = @url_prefix.port
           kvs['ServiceArg'] = url
-          kvs['HTTPMethod'] = method
+          kvs['HTTPMethod'] = method.to_s.upcase
           kvs['Blacklisted'] = true if blacklisted
 
           # Re-attach net::http edge unless it's blacklisted or if we don't have a
