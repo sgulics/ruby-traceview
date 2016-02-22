@@ -41,15 +41,15 @@ before_install:
   - gem update --system
   - gem update bundler
   - gem --version
-  - sudo sh -c "echo 'JVM_OPTS=\"\${JVM_OPTS} -Djava.net.preferIPv4Stack=false\"' >> /usr/local/cassandra/conf/cassandra-env.sh"
-  - echo "127.0.0.1 localhost"  | sudo tee /etc/hosts
-  - echo "127.0.0.1 " `hostname` | sudo tee /etc/hosts
-  - sudo service cassandra start
+#  - sudo sh -c "echo 'JVM_OPTS=\"\${JVM_OPTS} -Djava.net.preferIPv4Stack=false\"' >> /usr/local/cassandra/conf/cassandra-env.sh"
+#  - echo "127.0.0.1 localhost"  | sudo tee /etc/hosts
+#  - echo "127.0.0.1 " `hostname` | sudo tee /etc/hosts
+#  - sudo service cassandra start
 
 install:
   - wget https://files.appneta.com/install_appneta.sh
-  - sudo sh ./install_appneta.sh f51e2a43-0ee5-4851-8a54-825773b3218e
-  - sudo apt-get install -y tracelytics-java-agent
+  - sh ./install_appneta.sh f51e2a43-0ee5-4851-8a54-825773b3218e
+  - apt-get install -y tracelytics-java-agent
 
 before_script:
   - bundle install --jobs=3 --retry=3 --without development
