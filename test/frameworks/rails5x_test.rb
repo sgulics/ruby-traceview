@@ -155,7 +155,7 @@ if defined?(::Rails)
       traces[7]['Flavor'].must_equal "mysql"
 
       # Replace the datestamps with xxx to make testing easier
-      sql = traces[7]['Query'].gsub /\d+/, 'xxx'
+      sql = traces[7]['Query'].gsub(/\d+/, 'xxx')
       sql.must_equal "DELETE FROM `widgets` WHERE `widgets`.`id` = xxx"
 
       traces[7]['Name'].must_equal "SQL"
@@ -213,98 +213,24 @@ if defined?(::Rails)
       r.header['X-Trace'].must_equal traces[4]['X-Trace']
     end
 
-    it "should collect backtraces when true" do
+    it 'should obey :collect_backtraces setting when true' do
       TraceView::Config[:action_controller][:collect_backtraces] = true
 
       uri = URI.parse('http://127.0.0.1:8140/hello/world')
-      r = Net::HTTP.get_response(uri)
+      Net::HTTP.get_response(uri)
 
       traces = get_all_traces
-
-      traces.count.must_equal 7
-      unless defined?(JRUBY_VERSION)
-        # We don't test this under JRuby because the Java instrumentation
-        # for the DB drivers doesn't use our test reporter hence we won't
-        # see all trace events. :-(  To be improved.
-        valid_edges?(traces).must_equal true
-      end
-      validate_outer_layers(traces, 'rack')
-
-      traces[0]['Layer'].must_equal "rack"
-      traces[0]['Label'].must_equal "entry"
-      traces[0]['URL'].must_equal "/hello/world"
-
-      traces[1]['Layer'].must_equal "rack"
-      traces[1]['Label'].must_equal "info"
-
-      traces[2]['Layer'].must_equal "rails"
-      traces[2]['Label'].must_equal "entry"
-      traces[2]['Controller'].must_equal "HelloController"
-      traces[2]['Action'].must_equal "world"
-      traces[2].key?('Backtrace').must_equal true
-
-      traces[3]['Layer'].must_equal "actionview"
-      traces[3]['Label'].must_equal "entry"
-
-      traces[4]['Layer'].must_equal "actionview"
-      traces[4]['Label'].must_equal "exit"
-
-      traces[5]['Layer'].must_equal "rails"
-      traces[5]['Label'].must_equal "exit"
-
-      traces[6]['Layer'].must_equal "rack"
-      traces[6]['Label'].must_equal "exit"
-
-      # Validate the existence of the response header
-      r.header.key?('X-Trace').must_equal true
-      r.header['X-Trace'].must_equal traces[6]['X-Trace']
+      layer_has_key(traces, 'rails', 'Backtrace')
     end
 
-    it "should NOT collect backtraces when false" do
+    it 'should obey :collect_backtraces setting when false' do
       TraceView::Config[:action_controller][:collect_backtraces] = false
 
       uri = URI.parse('http://127.0.0.1:8140/hello/world')
-      r = Net::HTTP.get_response(uri)
+      Net::HTTP.get_response(uri)
 
       traces = get_all_traces
-
-      traces.count.must_equal 7
-      unless defined?(JRUBY_VERSION)
-        # We don't test this under JRuby because the Java instrumentation
-        # for the DB drivers doesn't use our test reporter hence we won't
-        # see all trace events. :-(  To be improved.
-        valid_edges?(traces).must_equal true
-      end
-      validate_outer_layers(traces, 'rack')
-
-      traces[0]['Layer'].must_equal "rack"
-      traces[0]['Label'].must_equal "entry"
-      traces[0]['URL'].must_equal "/hello/world"
-
-      traces[1]['Layer'].must_equal "rack"
-      traces[1]['Label'].must_equal "info"
-
-      traces[2]['Layer'].must_equal "rails"
-      traces[2]['Label'].must_equal "entry"
-      traces[2]['Controller'].must_equal "HelloController"
-      traces[2]['Action'].must_equal "world"
-      traces[2].key?('Backtrace').must_equal false
-
-      traces[3]['Layer'].must_equal "actionview"
-      traces[3]['Label'].must_equal "entry"
-
-      traces[4]['Layer'].must_equal "actionview"
-      traces[4]['Label'].must_equal "exit"
-
-      traces[5]['Layer'].must_equal "rails"
-      traces[5]['Label'].must_equal "exit"
-
-      traces[6]['Layer'].must_equal "rack"
-      traces[6]['Label'].must_equal "exit"
-
-      # Validate the existence of the response header
-      r.header.key?('X-Trace').must_equal true
-      r.header['X-Trace'].must_equal traces[6]['X-Trace']
+      layer_doesnt_have_key(traces, 'rails', 'Backtrace')
     end
   end
 end
