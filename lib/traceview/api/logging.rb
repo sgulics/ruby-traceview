@@ -119,11 +119,8 @@ module TraceView
           opts[:TraceOrigin] = :forced
           log_event(layer, :entry, TraceView::Context.startTrace, opts)
 
-        elsif TraceView.sample?(opts.merge(:layer => layer, :xtrace => xtrace))
-          # Probablistic tracing of a subset of requests based off of
-          # sample rate and sample source
-          opts[:SampleRate]        = TraceView.sample_rate
-          opts[:SampleSource]      = TraceView.sample_source
+        elsif (rv = TraceView.sample?(opts.merge(:layer => layer, :xtrace => xtrace)))
+          opts[:_SP] = rv
 
           if TraceView.through? && opts.key?('X-TV-Meta')
             opts[:TraceOrigin]       = :avw_sampled

@@ -12,6 +12,9 @@ if defined?(TraceView::Config)
   # order to initiate tracing from Ruby.
   TraceView::Config[:tracing_mode] = '<%= @tracing_mode %>'
 
+  # App Token
+  # TraceView::Config[:app_token] = '0000000000000000000000'
+
   # Verbose output of instrumentation initialization
   # TraceView::Config[:verbose] = <%= @verbose %>
 

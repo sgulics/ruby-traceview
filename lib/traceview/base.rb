@@ -13,6 +13,15 @@ OBOE_SAMPLE_RATE_SOURCE_LAST_OBOE              = 4
 OBOE_SAMPLE_RATE_SOURCE_DEFAULT_MISCONFIGURED  = 5
 OBOE_SAMPLE_RATE_SOURCE_OBOE_DEFAULT           = 6
 
+OBOE_SETTINGS_FLAG_OK                          = 0x0
+OBOE_SETTINGS_FLAG_INVALID                     = 0x1
+OBOE_SETTINGS_FLAG_OVERRIDE                    = 0x2
+OBOE_SETTINGS_FLAG_SAMPLE_START                = 0x4
+OBOE_SETTINGS_FLAG_SAMPLE_THROUGH              = 0x8
+OBOE_SETTINGS_FLAG_SAMPLE_THROUGH_ALWAYS       = 0x10
+OBOE_SETTINGS_FLAG_SAMPLE_AVW_ALWAYS           = 0x20
+OBOE_SETTINGS_FLAG_SAMPLE_BUCKET_ENABLED       = 0x40
+
 # Masks for bitwise ops
 ZERO_MASK = 0b0000000000000000000000000000
 
@@ -263,14 +272,6 @@ module TraceViewBase
 
   def log(_layer, _label, _options = {})
     fail 'log should be implemented by metal layer.'
-  end
-
-  def set_tracing_mode(_mode)
-    fail 'set_tracing_mode should be implemented by metal layer.'
-  end
-
-  def set_sample_rate(_rate)
-    fail 'set_sample_rate should be implemented by metal layer.'
   end
 end
 

@@ -26,28 +26,6 @@ unless defined?(JRUBY_VERSION)
       }
     end
 
-    def test_localset_sample_source
-      skip("FIXME: broken on travis only") if ENV['TRAVIS'] == "true"
-
-      # We make an initial call here which will force the traceview gem to retrieve
-      # the sample_rate and sample_source from liboboe (via sample? method)
-      get "/lobster"
-
-      clear_all_traces
-
-      get "/lobster"
-
-      traces = get_all_traces
-      traces.count.must_equal 3
-
-      validate_outer_layers(traces, 'rack')
-
-      kvs = {}
-      kvs["SampleRate"] = 1000000
-      kvs["SampleSource"] = OBOE_SAMPLE_RATE_SOURCE_FILE
-      validate_event_keys(traces[0], kvs)
-    end
-
     # Test logging of all Ruby datatypes against the SWIG wrapper
     # of addInfo which only has four overloads.
     def test_swig_datatypes_conversion

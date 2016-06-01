@@ -117,58 +117,28 @@ module TraceView
       xtrace  = opts[:xtrace]     ? opts[:xtrace].to_s.strip       : TV_STR_BLANK
       tv_meta = opts['X-TV-Meta'] ? opts['X-TV-Meta'].to_s.strip   : TV_STR_BLANK
 
-      rv = TraceView::Context.sampleRequest(layer, xtrace, tv_meta)
-
-      if rv == 0
-        if ENV.key?('TRACEVIEW_GEM_TEST')
-          # When in test, always trace and don't clear
-          # the stored sample rate/source
-          TraceView.sample_rate ||= -1
-          TraceView.sample_source ||= -1
-          true
-        else
-          TraceView.sample_rate = -1
-          TraceView.sample_source = -1
-          false
-        end
+      flags = nil
+      case TV::Config[:tracing_mode].to_sym
+      when :always
+        flags = OBOE_SETTINGS_FLAG_SAMPLE_START | OBOE_SETTINGS_FLAG_SAMPLE_THROUGH_ALWAYS | OBOE_SETTINGS_FLAG_SAMPLE_AVW_ALWAYS
+      when :through
+        flags = OBOE_SETTINGS_FLAG_SAMPLE_THROUGH_ALWAYS
       else
-        # liboboe version > 1.3.1 returning a bit masked integer with SampleRate and
-        # source embedded
-        TraceView.sample_rate = (rv & SAMPLE_RATE_MASK)
-        TraceView.sample_source = (rv & SAMPLE_SOURCE_MASK) >> 24
-        true
+        flags = 0
       end
+
+      TraceView::Config[:app_token]   ||= Oboe::Context.get_apptoken
+      TraceView::Config[:sample_rate] ||= -1
+      opts[:URL]                      ||= ''
+
+      cxt = Oboe::Context.new(layer, TraceView::Config[:app_token], flags, TraceView::Config[:sample_rate])
+      kvstring = (tv_meta.empty? ? '' : "AVW=#{tv_meta}")
+
+      cxt.should_trace(xtrace, opts[:URL], kvstring)
     rescue StandardError => e
       TraceView.logger.debug "[oboe/error] sample? error: #{e.inspect}"
+      TraceView.logger.debug e.backtrace.join('\r\n')
       false
-    end
-
-    def set_tracing_mode(mode)
-      return unless TraceView.loaded
-
-      value = mode.to_sym
-
-      case value
-      when :never
-        TraceView::Context.setTracingMode(OBOE_TRACE_NEVER)
-
-      when :always
-        TraceView::Context.setTracingMode(OBOE_TRACE_ALWAYS)
-
-      when :through
-        TraceView::Context.setTracingMode(OBOE_TRACE_THROUGH)
-
-      else
-        TraceView.logger.fatal "[oboe/error] Invalid tracing mode set: #{mode}"
-        TraceView::Context.setTracingMode(OBOE_TRACE_THROUGH)
-      end
-    end
-
-    def set_sample_rate(rate)
-      return unless TraceView.loaded
-
-      # Update liboboe with the new SampleRate value
-      TraceView::Context.setDefaultSampleRate(rate.to_i)
     end
   end
 end
