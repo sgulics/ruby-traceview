@@ -250,7 +250,7 @@ module TraceView
         end
 
         # Validate :sample_rate value
-        unless value.between?(1, 1e6)
+        unless value.between?(-1, 1e6)
           fail 'traceview :sample_rate must be between 1 and 1000000 (1m)'
         end
 
