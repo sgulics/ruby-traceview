@@ -121,13 +121,7 @@ module TraceView
 
         elsif (rv = TraceView.sample?(opts.merge(:layer => layer, :xtrace => xtrace)))
           opts[:_SP] = rv
-
-          if TraceView.through? && opts.key?('X-TV-Meta')
-            opts[:TraceOrigin]       = :avw_sampled
-          else
-            opts[:TraceOrigin]       = :always_sampled
-          end
-
+          opts[:AApp] = TraceView::Config[:app_token]
           log_event(layer, :entry, TraceView::Context.startTrace, opts)
         end
       end
