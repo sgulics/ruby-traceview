@@ -129,15 +129,20 @@ module TraceView
 
       TraceView::Config[:app_token]   ||= Oboe::Context.get_apptoken
       TraceView::Config[:sample_rate] ||= -1
-      opts[:URL]                      ||= ''
+      url = opts[:URL] || opts[:JobName] || ''
 
-      cxt = Oboe::Context.new(layer, TraceView::Config[:app_token], flags, TraceView::Config[:sample_rate])
+      # Instantiate a new tracing context with current settings
+      TV.context = Oboe::Context.new(layer, TraceView::Config[:app_token], flags, TraceView::Config[:sample_rate])
       kvstring = (tv_meta.empty? ? '' : "AVW=#{tv_meta}")
 
-      cxt.should_trace(xtrace, opts[:URL], kvstring)
+      # Ask liboboe if we should trace this run
+      TraceView.context_settings = TV.context.should_trace(xtrace, url, kvstring)
+
+      # True if non-empty BSON string.  False otherwise
+      (TV.context_settings.is_a?(String) && !TV.context_settings.empty?) ? true : false
     rescue StandardError => e
       TraceView.logger.debug "[oboe/error] sample? error: #{e.inspect}"
-      TraceView.logger.debug e.backtrace.join('\r\n')
+      TraceView.logger.debug e.backtrace.join('\n')
       false
     end
   end

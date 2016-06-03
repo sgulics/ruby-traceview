@@ -119,8 +119,8 @@ module TraceView
           opts[:TraceOrigin] = :forced
           log_event(layer, :entry, TraceView::Context.startTrace, opts)
 
-        elsif (rv = TraceView.sample?(opts.merge(:layer => layer, :xtrace => xtrace)))
-          opts[:_SP] = rv
+        elsif TraceView.sample?(opts.merge(:layer => layer, :xtrace => xtrace))
+          opts[:_SP]  = TraceView.context_settings
           opts[:AApp] = TraceView::Config[:app_token]
           log_event(layer, :entry, TraceView::Context.startTrace, opts)
         end
@@ -144,7 +144,13 @@ module TraceView
 
         log_event(layer, :exit, TraceView::Context.createEvent, opts)
         xtrace = TraceView::Context.toString
-        TraceView::Context.clear unless TraceView.has_incoming_context?
+
+        # Conditionally clear tracing context and the context_settings data.
+        unless TraceView.has_incoming_context?
+          TraceView::Context.clear
+          TraceView.context_settings = nil
+        end
+
         xtrace
       end
 

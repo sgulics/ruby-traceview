@@ -47,10 +47,25 @@ module TraceViewBase
 
   attr_accessor :reporter
   attr_accessor :loaded
-  thread_local :sample_source
-  thread_local :sample_rate
+
+  # The instantiated Oboe::Context object created for the current
+  # request. This is cleared everytime tracing completes (e.g. end
+  # of a web request, end of a background job)
+  thread_local :context
+
+  # The Oboe::Context settings returned by the liboboe should_trace
+  # method in the c extension.  This BSON string has values such as
+  # tracing mode, sample rate from sample time etc...
+  thread_local :context_settings
+
+  # Used to track the active layer being traced
   thread_local :layer
+
+  # Use to track the active operation being traced. Used for
+  # instrumentation of operations that may be recursive.  We generally
+  # shoot just to instrument the outermost layer.
   thread_local :layer_op
+
   # Semaphore used during the test suite to test
   # global config options.
   thread_local :config_lock
@@ -232,7 +247,10 @@ module TraceViewBase
   def pry!
     # Only valid for development or test environments
     env = ENV['RACK_ENV'] || ENV['RAILS_ENV']
-    return unless %w(development, test).include? env
+    TV.logger.debug "env is #{env}"
+    return unless %w(development test).include? env
+
+    TV.logger.debug "ok doing the debugger thing"
 
     if RUBY_VERSION > '1.8.7'
       require 'pry-byebug'
