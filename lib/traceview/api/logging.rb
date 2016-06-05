@@ -125,7 +125,7 @@ module TraceView
         elsif TraceView.sample?(opts.merge(:layer => layer, :xtrace => xtrace))
           opts[:_SP]  = TraceView.context_settings
           opts[:App]  = TraceView.app_token
-          opts[:AApp] = TraceView::Config[:app_token]
+          opts[:Aapp] = TraceView::Config[:app_token] if TraceView::Config[:app_token]
           log_event(layer, :entry, TraceView::Context.startTrace, opts)
         end
       end
