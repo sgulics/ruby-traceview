@@ -127,12 +127,11 @@ module TraceView
         flags = 0
       end
 
-      TraceView::Config[:app_token]   ||= Oboe::Context.get_apptoken
       TraceView::Config[:sample_rate] ||= -1
       url = opts[:URL] || opts[:JobName] || ''
 
       # Instantiate a new tracing context with current settings
-      TV.context = Oboe::Context.new(layer, TraceView::Config[:app_token], flags, TraceView::Config[:sample_rate])
+      TV.context = Oboe::Context.new(layer, TV.app_token, flags, TraceView::Config[:sample_rate])
       kvstring = (tv_meta.empty? ? '' : "AVW=#{tv_meta}")
 
       # Ask liboboe if we should trace this run

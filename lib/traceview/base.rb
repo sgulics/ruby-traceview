@@ -48,6 +48,11 @@ module TraceViewBase
   attr_accessor :reporter
   attr_accessor :loaded
 
+  # We retrieve the app_token from liboboe once on boot and store it
+  # here. It is then used when new traces are initiated.  See
+  # lib/traceview/api/logging.rb
+  attr_accessor :app_token
+
   # The instantiated Oboe::Context object created for the current
   # request. This is cleared everytime tracing completes (e.g. end
   # of a web request, end of a background job)

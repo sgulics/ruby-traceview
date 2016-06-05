@@ -95,6 +95,9 @@ module TraceView
           TraceView::Config[:tracing_mode] = :always
         end
 
+        # Make sure the app_token has been loaded
+        TraceView.app_token ||= Oboe_metal::Context.get_apptoken
+
         # Used by JRuby/Java webservers such as Tomcat
         TraceView::Context.fromString(xtrace) if TraceView.pickup_context?(xtrace)
 
@@ -121,6 +124,7 @@ module TraceView
 
         elsif TraceView.sample?(opts.merge(:layer => layer, :xtrace => xtrace))
           opts[:_SP]  = TraceView.context_settings
+          opts[:App]  = TraceView.app_token
           opts[:AApp] = TraceView::Config[:app_token]
           log_event(layer, :entry, TraceView::Context.startTrace, opts)
         end
