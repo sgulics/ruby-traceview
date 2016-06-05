@@ -9,8 +9,6 @@ class TracingModeTest  < Minitest::Test
   end
 
   def test_dont_start_trace_when_through
-    skip
-
     TraceView::Config[:tracing_mode] = :through
 
     TV::API.start_trace(:test_through) do
@@ -19,8 +17,6 @@ class TracingModeTest  < Minitest::Test
   end
 
   def test_trace_when_always
-    skip
-
     TraceView::Config[:tracing_mode] = :always
 
     TV::API.start_trace(:test_always) do
@@ -29,8 +25,6 @@ class TracingModeTest  < Minitest::Test
   end
 
   def test_dont_trace_when_never
-    skip
-
     TraceView::Config[:tracing_mode] = :never
 
     TV::API.start_trace(:test_never) do
