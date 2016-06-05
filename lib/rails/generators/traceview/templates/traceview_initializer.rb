@@ -13,6 +13,9 @@ if defined?(TraceView::Config)
   TraceView::Config[:tracing_mode] = '<%= @tracing_mode %>'
 
   # App Token
+  #
+  # You can set a custom app_token to override the default.
+  #
   # TraceView::Config[:app_token] = '0000000000000000000000'
 
   # Verbose output of instrumentation initialization
