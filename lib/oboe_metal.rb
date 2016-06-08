@@ -148,5 +148,7 @@ module TraceView
 end
 # rubocop:enable Style/Documentation
 
+# Load the app token from liboboe
+TraceView.app_token ||= Oboe_metal::Context.get_apptoken
 TraceView.loaded = true
 TraceView.config_lock = Mutex.new
