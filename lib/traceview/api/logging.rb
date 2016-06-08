@@ -95,9 +95,6 @@ module TraceView
           TraceView::Config[:tracing_mode] = :always
         end
 
-        # Make sure the app_token has been loaded
-        TraceView.app_token ||= Oboe_metal::Context.get_apptoken
-
         # Used by JRuby/Java webservers such as Tomcat
         TraceView::Context.fromString(xtrace) if TraceView.pickup_context?(xtrace)
 
