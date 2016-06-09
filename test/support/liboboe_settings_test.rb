@@ -56,6 +56,24 @@ class RackTestApp < Minitest::Test
     TraceView::Config[:app_token] = nil
   end
 
+  def test_multiple_custom_app_tokens
+    clear_all_traces
+
+    TraceView::Config[:app_token] = ["GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw", "GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw", "GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw"]
+
+    get '/'
+
+    traces = get_all_traces
+    traces.count.must_equal 3
+
+    traces[0].key?('_SP').must_equal true
+    traces[0].key?('App').must_equal true
+    traces[0].key?('Aapp').must_equal true
+    traces[0]['Aapp'].must_equal "[\"GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw\", \"GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw\", \"GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw\"]"
+
+    TraceView::Config[:app_token] = nil
+  end
+
   # Test logging of all Ruby datatypes against the SWIG wrapper
   # of addInfo which only has four overloads.
   def test_swig_datatypes_conversion
