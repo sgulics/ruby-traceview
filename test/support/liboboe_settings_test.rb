@@ -35,7 +35,7 @@ class RackTestApp < Minitest::Test
 
     traces[0].key?('_SP').must_equal true
     traces[0].key?('App').must_equal true
-    traces[0].key?('Aapp').must_equal false
+    traces[0].key?('AApp').must_equal false
   end
 
   def test_custom_app_token
@@ -50,8 +50,8 @@ class RackTestApp < Minitest::Test
 
     traces[0].key?('_SP').must_equal true
     traces[0].key?('App').must_equal true
-    traces[0].key?('Aapp').must_equal true
-    traces[0]['Aapp'].must_equal "GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw"
+    traces[0].key?('AApp').must_equal true
+    traces[0]['AApp'].must_equal "GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw"
 
     TraceView::Config[:app_token] = nil
   end
@@ -68,8 +68,8 @@ class RackTestApp < Minitest::Test
 
     traces[0].key?('_SP').must_equal true
     traces[0].key?('App').must_equal true
-    traces[0].key?('Aapp').must_equal true
-    traces[0]['Aapp'].must_equal "[\"GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw\", \"GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw\", \"GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw\"]"
+    traces[0].key?('AApp').must_equal true
+    traces[0]['AApp'].must_equal "[\"GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw\", \"GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw\", \"GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw\"]"
 
     TraceView::Config[:app_token] = nil
   end

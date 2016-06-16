@@ -262,7 +262,7 @@ module TraceView
           platform_info['RubyHeroku.TraceView.Version'] = ::TraceViewHeroku::Version::STRING if defined?(::TraceViewHeroku)
           platform_info['Ruby.TraceMode.Version']       = ::TraceView::Config[:tracing_mode]
           platform_info[:App]                           = ::TraceView.app_token
-          platform_info[:Aapp]                          = ::TraceView::Config[:app_token] if TraceView::Config[:app_token]
+          platform_info[:AApp]                          = ::TraceView::Config[:app_token] if TraceView::Config[:app_token]
 
           # Collect up the loaded gems
           if defined?(Gem) && Gem.respond_to?(:loaded_specs)
