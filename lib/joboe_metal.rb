@@ -160,7 +160,7 @@ module TraceView
 
         url = opts[:URL] || opts[:JobName] || nil
 
-        TraceView.context_settings = Java::ComTracelyticsJoboe::LayerUtil.shouldTraceRequestSP(opts[:layer].to_s, { 'X-Trace' => opts[:xtrace], 'X-TV-Meta' => opts['X-TV-Meta'] }, url)
+        TraceView.context_settings = Java::ComTracelyticsJoboe::LayerUtil.shouldTrace(opts[:layer].to_s, { 'X-Trace' => opts[:xtrace], 'X-TV-Meta' => opts['X-TV-Meta'] }, url)
 
         TV.context_settings.empty? ? false : true
       rescue => e
