@@ -179,6 +179,14 @@ module TraceView
   end
 end
 
+# Make sure that we have a joboe with new app token support
+unless defined?(Java::ComTracelyticsJoboe::LayerUtil) &&
+  Java::ComTracelyticsJoboe::LayerUtil.respond_to?(:shouldTrace)
+  # LoadError will be captured by lib/traceview.rb and
+  # the gem will be put in no-op mode
+  raise LoadError
+end
+
 # Assure that the Joboe Java Agent was loaded via premain
 case Java::ComTracelyticsAgent::Agent.getStatus
   when Java::ComTracelyticsAgent::Agent::AgentStatus::INITIALIZED_SUCCESSFUL
