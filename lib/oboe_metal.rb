@@ -128,14 +128,15 @@ module TraceView
       end
 
       TraceView::Config[:sample_rate] ||= -1
-      url = opts[:URL] || opts[:JobName] || ''
+      url = opts[:URL] || opts[:JobName] || TV_STR_BLANK
+      token = TraceView::Config[:app_token] ? TraceView::Config[:app_token] : TV_STR_BLANK
 
-      # Instantiate a new tracing context with current settings
-      TV.context = Oboe::Context.new(layer, TV.app_token, flags, TraceView::Config[:sample_rate])
+      # Instantiate a new tracing context with current settings (if it doesn't exist)
+      TV.context[layer] ||= Oboe::Context.new(layer, token.to_s, flags, TraceView::Config[:sample_rate])
       kvstring = (tv_meta.empty? ? '' : "AVW=#{tv_meta}")
 
       # Ask liboboe if we should trace this run
-      TraceView.context_settings = TV.context.should_trace(xtrace, url, kvstring)
+      TraceView.context_settings = TV.context[layer].should_trace(xtrace, url, kvstring)
 
       # True if non-empty BSON string.  False otherwise
       (TV.context_settings.is_a?(String) && !TV.context_settings.empty?) ? true : false
@@ -148,7 +149,13 @@ module TraceView
 end
 # rubocop:enable Style/Documentation
 
-# Load the app token from liboboe
-TraceView.app_token ||= Oboe_metal::Context.get_apptoken
-TraceView.loaded = true
+if defined?(Oboe_metal::Context) && Oboe_metal::Context.respond_to?(:get_apptoken)
+  # Load the app token from liboboe
+  TraceView.app_token ||= Oboe_metal::Context.get_apptoken
+  TraceView.loaded = true
+else
+  TraceView.loaded = false
+end
+
+TraceView.context = {}
 TraceView.config_lock = Mutex.new
