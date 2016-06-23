@@ -41,7 +41,7 @@ class RackTestApp < Minitest::Test
   def test_custom_app_token
     clear_all_traces
 
-    TraceView::Config[:app_token] = "GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw"
+    TraceView::Config[:app_token] = "351c830d5b8d44c787fea17d275e6492"
 
     get '/'
 
@@ -51,25 +51,7 @@ class RackTestApp < Minitest::Test
     traces[0].key?('_SP').must_equal true
     traces[0].key?('App').must_equal true
     traces[0].key?('AApp').must_equal true
-    traces[0]['AApp'].must_equal "GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw"
-
-    TraceView::Config[:app_token] = nil
-  end
-
-  def test_multiple_custom_app_tokens
-    clear_all_traces
-
-    TraceView::Config[:app_token] = ["GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw", "GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw", "GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw"]
-
-    get '/'
-
-    traces = get_all_traces
-    traces.count.must_equal 3
-
-    traces[0].key?('_SP').must_equal true
-    traces[0].key?('App').must_equal true
-    traces[0].key?('AApp').must_equal true
-    traces[0]['AApp'].must_equal "[\"GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw\", \"GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw\", \"GN8bLzTxH3WF66kwGN8bLzTxH3WF66kw\"]"
+    traces[0]['AApp'].must_equal "351c830d5b8d44c787fea17d275e6492"
 
     TraceView::Config[:app_token] = nil
   end
