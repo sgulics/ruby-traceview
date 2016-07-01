@@ -25,6 +25,7 @@ module TraceView
         if TraceView.loaded
           TraceView::Loading.load_access_key
           TraceView::Inst.load_instrumentation
+          TraceView::Inst.load_custom_instrumentation
         end
       end
     end

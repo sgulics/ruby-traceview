@@ -80,6 +80,7 @@ if defined?(::Sinatra)
 
   TraceView::Loading.load_access_key
   TraceView::Inst.load_instrumentation
+  TraceView::Inst.load_custom_instrumentation
 
   ::Sinatra::Base.use TraceView::Rack
 

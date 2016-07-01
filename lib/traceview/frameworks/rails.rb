@@ -111,6 +111,7 @@ if defined?(::Rails)
           TraceView::Loading.load_access_key
           TraceView::Inst.load_instrumentation
           TraceView::Rails.load_instrumentation
+          TraceView::Inst.load_custom_instrumentation
 
           # Report __Init after fork when in Heroku
           TraceView::API.report_init unless TraceView.heroku?
@@ -130,6 +131,7 @@ if defined?(::Rails)
       TraceView::Inst.load_instrumentation
       TraceView::Rails.load_instrumentation
       TraceView::Rails.include_helpers
+      TraceView::Inst.load_custom_instrumentation
 
       # Report __Init after fork when in Heroku
       TraceView::API.report_init unless TraceView.heroku?

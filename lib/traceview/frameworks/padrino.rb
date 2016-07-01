@@ -52,6 +52,7 @@ if defined?(::Padrino)
     ::TraceView.logger = ::Padrino.logger if ::Padrino.respond_to?(:logger)
     ::TraceView::Loading.load_access_key
     ::TraceView::Inst.load_instrumentation
+    ::TraceView::Inst.load_custom_instrumentation
 
     ::TraceView::Util.send_include(::Padrino::Routing::InstanceMethods, ::TraceView::PadrinoInst::Routing)
     if defined?(::Padrino::Rendering)

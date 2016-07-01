@@ -94,6 +94,7 @@ if defined?(::Grape)
 
   TraceView::Loading.load_access_key
   TraceView::Inst.load_instrumentation
+  TraceView::Inst.load_custom_instrumentation
 
   ::TraceView::Util.send_extend(::Grape::API,               ::TraceView::Grape::API)
   ::TraceView::Util.send_include(::Grape::Endpoint,          ::TraceView::Grape::Endpoint)
