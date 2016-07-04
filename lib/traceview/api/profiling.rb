@@ -93,7 +93,7 @@ module TraceView
         instance_method = klass.instance_methods.include?(method) || klass.private_instance_methods.include?(method)
         class_method = klass.singleton_methods.include?(method)
 
-        # Make sure the request klass::method exists
+        # Make sure the requested klass::method exists
         if !instance_method && !class_method
           TraceView.logger.warn "[traceview/error] profile_method: Can't instrument #{klass}.#{method} as it doesn't seem to exist."
           TraceView.logger.warn "[traceview/error] #{__FILE__}:#{__LINE__}"
