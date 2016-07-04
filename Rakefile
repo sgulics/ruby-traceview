@@ -135,6 +135,7 @@ task :environment do
 end
 
 task :console => :environment do
+  ENV['TRACEVIEW_GEM_CONSOLE'] = "true"
   ARGV.clear
   if TV::Test.gemfile?(:delayed_job)
     require './test/servers/delayed_job'
