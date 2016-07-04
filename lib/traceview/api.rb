@@ -4,8 +4,8 @@
 module TraceView
   ##
   # This module implements the TraceView tracing API.
-  # See: https://github.com/appneta/oboe-ruby#the-tracing-api
-  # and/or: http://rdoc.info/gems/traceview/TraceView/API/Tracing
+  # See: https://github.com/appneta/ruby-traceview#the-tracing-api
+  #
   module API
     def self.extend_with_tracing
       extend TraceView::API::Logging
