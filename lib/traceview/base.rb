@@ -223,7 +223,7 @@ module TraceViewBase
   def pry!
     # Only valid for development or test environments
     env = ENV['RACK_ENV'] || ENV['RAILS_ENV']
-    return unless %w(development, test).include? env
+    return unless %w(development, test).include? env || ENV['TRACEVIEW_GEM_CONSOLE']
 
     if RUBY_VERSION > '1.8.7'
       require 'pry-byebug'
