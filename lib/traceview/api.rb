@@ -7,12 +7,32 @@ module TraceView
   # See: https://github.com/appneta/ruby-traceview#the-tracing-api
   #
   module API
+
     def self.extend_with_tracing
+      extend TraceView::API::Util
       extend TraceView::API::Logging
       extend TraceView::API::Tracing
       extend TraceView::API::Profiling
       extend TraceView::API::LayerInit
     end
-    extend TraceView::API::Util
+
+    ##
+    # Load the traceview tracing API
+    #
+    def self.require_api
+      TV.pry!
+      pattern = File.join(File.dirname(__FILE__), 'api', '*.rb')
+      Dir.glob(pattern) do |f|
+        require f
+      end
+
+      begin
+        TraceView::API.extend_with_tracing
+      rescue LoadError => e
+        TraceView.logger.fatal "[traceview/error] Couldn't load API: #{e.message}"
+      end
+    end
   end
 end
+
+TraceView::API.require_api

@@ -65,27 +65,8 @@ module TraceView
     rescue StandardError => e
       TraceView.logger.error "Trouble obtaining access_key and rum_id: #{e.inspect}"
     end
-
-    ##
-    # Load the traceview tracing API
-    #
-    def self.require_api
-      pattern = File.join(File.dirname(__FILE__), 'api', '*.rb')
-      Dir.glob(pattern) do |f|
-        require f
-      end
-      require 'traceview/api'
-
-      begin
-        TraceView::API.extend_with_tracing
-      rescue LoadError => e
-        TraceView.logger.fatal "[traceview/error] Couldn't load api: #{e.message}"
-      end
-    end
   end
 end
-
-TraceView::Loading.require_api
 
 # Auto-start the Reporter unless we running Unicorn on Heroku
 # In that case, we start the reporters after fork
