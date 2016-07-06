@@ -61,6 +61,11 @@ install:
   - wget https://files.appneta.com/install_appneta.sh
   - sudo sh ./install_appneta.sh f51e2a43-0ee5-4851-8a54-825773b3218e
   - sudo apt-get install -y tracelytics-java-agent
+  - wget "https://github.com/tracelytics/packages-experimental/raw/prod/apt/pool/experimental/libo/liboboe/liboboe0_2.0.2-precise1_amd64.deb"
+  - wget "https://github.com/tracelytics/packages-experimental/raw/prod/apt/pool/experimental/libo/liboboe/liboboe-dbg_2.0.2-precise1_amd64.deb"
+  - wget "https://github.com/tracelytics/packages-experimental/raw/prod/apt/pool/experimental/libo/liboboe/liboboe-dev_2.0.2-precise1_amd64.deb"
+  - wget "https://github.com/tracelytics/packages-experimental/raw/prod/apt/pool/experimental/t/tracelyzer/tracelyzer_2.0.0-precise1_amd64.deb"
+  - sudo dpkg -i liboboe0_2.0.2-xenial1_amd64.deb  liboboe-dbg_2.0.2-xenial1_amd64.deb  liboboe-dev_2.0.2-xenial1_amd64.deb  tracelyzer_2.0.0-xenial1_amd64.deb
 
 before_script:
   - sudo cp -f ./test/settings /var/lib/tracelyzer/
