@@ -130,6 +130,34 @@ module TraceView
           TraceView::Context.clear
         end
       end
+
+      ##
+      # Public: Trace a method on a class or module.  That method can be of any (accessible)
+      # type (instance, singleton, private, protected etc.).
+      #
+      # klass  - the class or module that has the method to trace
+      # method - the method to trace.  Can be singleton, instance, private etc...
+      # opts   - a hash specifying the one or more of the following options:
+      #   * :arguments  - report the arguments passed to <tt>method</tt> on each trace (default: false)
+      #   * :result     - report the return value of <tt>method</tt> on each layer (default: false)
+      #   * :backtrace  - report the return value of <tt>method</tt> on each layer (default: false)
+      #   * :name       - alternate name for the layer reported in the dashboard (default: method name)
+      #   * :extra_kvs  - a hash containing any additional KVs you would like reported with the layer
+      #
+      # Example
+      #
+      #   opts = {}
+      #   opts[:backtrace] = true
+      #   opts[:arguments] = false
+      #   opts[:name] = :array_sort
+      #
+      #   TraceView::API.trace_method(Array, :sort, opts)
+      #
+      def trace_method(klass, method, opts = {}, extra_kvs = {})
+        opts[:called_method] = __method__
+        opts[:profile] = false
+        instrument_method(klass, method, opts, extra_kvs)
+      end
     end
   end
 end

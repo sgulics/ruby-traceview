@@ -14,13 +14,13 @@ module TraceView
       extend TraceView::API::Tracing
       extend TraceView::API::Profiling
       extend TraceView::API::LayerInit
+      extend TraceView::API::Instrument
     end
 
     ##
     # Load the traceview tracing API
     #
     def self.require_api
-      TV.pry!
       pattern = File.join(File.dirname(__FILE__), 'api', '*.rb')
       Dir.glob(pattern) do |f|
         require f
