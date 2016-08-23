@@ -48,7 +48,9 @@ module TraceView
 
         ci.keys.each do |cm|
           klass, method = cm.split('#')
-          apply_custom_instrumentation(klass.constantize, method, ci[cm])
+          if ci[cm]['enabled']
+            apply_custom_instrumentation(klass.constantize, method, ci[cm])
+          end
         end
       else
         TraceView.logger.debug "[traceview/custom_instrumentation] Custom instrumentation file not found."
