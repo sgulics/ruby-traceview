@@ -17,6 +17,9 @@ end
 # New mime-types/mime-types-data requires ruby 2.0
 if RUBY_VERSION < '2.0'
   gem 'mime-types', '< 3.0'
+  # these gems dropped suport for < ruby version 2.0
+  gem 'json', '< 2.0.0'
+  gem 'mime-types-data', '< 3.2016.0221'
 end
 
 if defined?(JRUBY_VERSION)

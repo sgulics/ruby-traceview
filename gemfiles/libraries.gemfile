@@ -36,7 +36,7 @@ if RUBY_VERSION < '2.0.0'
   gem 'bunny', '< 2.0.0'
   # these gems dropped suport for < ruby version 2.0
   gem 'json', '< 2.0.0'
-  gem 'mime-types-data', '< 3.2016.0521'
+  gem 'mime-types-data', '< 3.2016.0221'
 else
   gem 'bunny'
 end
