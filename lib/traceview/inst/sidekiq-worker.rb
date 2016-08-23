@@ -63,8 +63,12 @@ if defined?(::Sidekiq) && RUBY_VERSION >= '2.0' && TraceView::Config[:sidekiqwor
 
   ::Sidekiq.configure_server do |config|
     config.server_middleware do |chain|
-      ::TraceView.logger.info '[traceview/loading] Adding Sidekiq worker middleware' if TraceView::Config[:verbose]
+      ::TraceView.logger.info '[traceview/loading] Adding Sidekiq worker middleware to Sidekiq server' if TraceView::Config[:verbose]
       chain.add ::TraceView::SidekiqWorker
+    end
+    config.client_middleware do |chain|
+      ::TraceView.logger.info '[traceview/loading] Adding Sidekiq client middleware to Sidekiq server' if TraceView::Config[:verbose]
+      chain.add ::TraceView::SidekiqClient
     end
   end
 end
