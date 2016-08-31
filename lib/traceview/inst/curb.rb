@@ -1,4 +1,4 @@
-# Copyright (c) 2015 AppNeta, Inc.
+# Copyright (c) 2016 AppNeta, Inc.
 # All rights reserved.
 
 module TraceView
@@ -38,7 +38,10 @@ module TraceView
         kvs
       rescue => e
         TraceView.logger.debug "[traceview/debug] Error capturing curb KVs: #{e.message}"
-        TraceView.logger.debug e.backtrace.join('\n') if ::TraceView::Config[:verbose]
+        if TraceView::Config[:verbose]
+          TraceView.logger.debug "[traceview/debug] #{__method__}:#{File.basename(__FILE__)}:#{__LINE__}: #{e.message}"
+          TraceView.logger.debug e.backtrace.join('\n')
+        end
       ensure
         return kvs
       end
@@ -78,9 +81,6 @@ module TraceView
               kvs[:Location] = headers["Location"]
             end
 
-            # Curb only provides a single long string of all response headers (yuck!).  So we are forced
-            # to process that string to pull out the response X-Trace value.
-            # Taken from https://stackoverflow.com/questions/14345805/curb-get-response-headers
             _, *response_headers = header_str.split(/[\r\n]+/).map(&:strip)
             response_headers = Hash[response_headers.flat_map{ |s| s.scan(/^(\S+): (.+)/) }]
 
@@ -97,7 +97,6 @@ module TraceView
         ensure
           TraceView::API.log_exit(:curb, kvs)
         end
-
       end
     end # CurlUtility
 

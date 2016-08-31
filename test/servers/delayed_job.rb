@@ -1,9 +1,12 @@
 # Copyright (c) 2015 AppNeta, Inc.
 # All rights reserved.
 
+# This is a Rails app that launches a DelayedJob worker
+# in a background thread.
+#
 require "rails/all"
 require "delayed_job"
-require "action_controller/railtie" # require more if needed
+require "action_controller/railtie"
 require 'rack/handler/puma'
 require File.expand_path(File.dirname(__FILE__) + '/../models/widget')
 
@@ -30,25 +33,12 @@ class Rails40MetalStack < Rails::Application
     get "/hello/metal" => "ferro#world"
   end
 
-  # Enable cache classes. Production style.
   config.cache_classes = true
   config.eager_load = false
-
-  # uncomment below to display errors
-  # config.consider_all_requests_local = true
-
   config.active_support.deprecation = :stderr
-
-  # Here you could remove some middlewares, for example
-  # Rack::Lock, ActionDispatch::Flash and  ActionDispatch::BestStandardsSupport below.
-  # The remaining stack is printed on rackup (for fun!).
-  # Rails API has config.middleware.api_only! to get
-  # rid of browser related middleware.
   config.middleware.delete "Rack::Lock"
   config.middleware.delete "ActionDispatch::Flash"
   config.middleware.delete "ActionDispatch::BestStandardsSupport"
-
-  # We need a secret token for session, cookies, etc.
   config.secret_token = "49837489qkuweoiuoqwehisuakshdjksadhaisdy78o34y138974xyqp9rmye8yrpiokeuioqwzyoiuxftoyqiuxrhm3iou1hrzmjk"
   config.secret_key_base = "2048671-96803948"
 end
