@@ -32,7 +32,7 @@ begin
       unless ENV['RAILS_GROUP'] == 'assets' or ENV['IGNORE_TRACEVIEW_WARNING']
         $stderr.puts '=============================================================='
         $stderr.puts 'Missing TraceView libraries.  Tracing disabled.'
-        $stderr.puts 'See: http://bit.ly/1DaNOjw'
+        $stderr.puts 'See: http://docs.traceview.solarwinds.com/Instrumentation/ruby.html#troubleshooting-installation'
         $stderr.puts '=============================================================='
       end
     end
