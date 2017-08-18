@@ -36,6 +36,8 @@ module TraceView
               opts[:Flavor] = 'mysql'
             when /postgres/i
               opts[:Flavor] = 'postgresql'
+            when /oracle_enhanced/i
+              opts[:Flavor] = 'oracle_enhanced'
             end
           end
         rescue StandardError => e
@@ -102,6 +104,18 @@ module TraceView
             end
           else
             exec_insert_without_traceview(sql, name, binds, *args)
+          end
+        end
+
+        def exec_update_with_traceview(sql, name = nil, binds = [], *args)
+          if TraceView.tracing? && !ignore_payload?(name)
+
+            opts = extract_trace_details(sql, name, binds)
+            TraceView::API.trace('activerecord', opts || {}) do
+              exec_update_without_traceview(sql, name, binds, *args)
+            end
+          else
+            exec_update_without_traceview(sql, name, binds, *args)
           end
         end
 
